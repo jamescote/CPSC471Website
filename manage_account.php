@@ -1,8 +1,12 @@
+<?php
+	// Start Session
+	session_start();
+?>
 <!DOCTYPE HTML>
 <html>
 
 <head>
-  <title>colour_blue - another page</title>
+  <title>colour_blue - a page</title>
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
   <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
@@ -15,20 +19,12 @@
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="index.html">colour<span class="logo_colour">blue</span></a></h1>
-          <h2>Simple. Contemporary. Website Template.</h2>
+          <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
+		  <!-- Make sure you put the proper page name here -->
+          <h2>Home Page</h2>
         </div>
       </div>
-      <div id="menubar">
-        <ul id="menu">
-          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-          <li><a href="index.html">Home</a></li>
-          <li><a href="examples.html">Examples</a></li>
-          <li><a href="page.html">A Page</a></li>
-          <li class="selected"><a href="another_page.html">Another Page</a></li>
-          <li><a href="contact.html">Contact Us</a></li>
-        </ul>
-      </div>
+      <?php include 'menu.php'; ?>
     </div>
     <div id="content_header"></div>
     <div id="site_content">
@@ -59,7 +55,7 @@
       </div>
       <div id="content">
         <!-- insert the page content here -->
-        <h1>Another Page</h1>
+        <h1>A Page</h1>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.</p>

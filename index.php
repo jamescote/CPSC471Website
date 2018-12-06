@@ -1,100 +1,80 @@
 <?php
-error_reporting(0);
-$appservlang = $_GET['appservlang'];
-switch ($appservlang) {
-	case "th" :
-		$appservlang = "th";
-	break;
-	default :
-		$appservlang = "en";
-	break;
-}
-/************************************************************************/
-/* AppServ Open Project                                          */
-/* ===========================                                          */
-/*                                                                      */
-/* Copyright (c) 2001 by Phanupong Panyadee (http://www.appservnetwork.com)         */
-/* http://www.appservnetwork.com                                             */
-/*                                                                      */
-/* This program is free software. You can redistribute it and/or modify */
-/* it under the terms of the GNU General Public License as published by */
-/* the Free Software Foundation; either version 2 of the License.       */
-/************************************************************************/
-include("appserv/main.php");
+	// Start Session
+	session_start();
+?>
+<!DOCTYPE html>
+<html>
 
-$phpver=phpversion();
-print "<html>
 <head>
-<title>AppServ Open Project "._APPVERSION."</title>
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
-<style>
-<!-- Hide style for old browsers 
-BODY          {font-family: Tahoma;font-size=\"10\"}
-.headd { font-family: Tahoma ; font-size: 13pt; text-decoration:  none; }
-.app { font-family: Tahoma ; font-size: 13pt; text-decoration:  none; }
-.supp { font-family: Tahoma ; font-size: 20pt; text-decoration:  none; }
-A:link    {font-family: Tahoma ; text-decoration: none; color: #0000FF}
-A:visited {font-family: Tahoma ; text-decoration: none; color: #0000FF}
-A:hover   {font-family: Tahoma ; text-decoration: none; color: #FF0000}
-A:active  {font-family: Tahoma ; text-decoration: none; color: #FF0000}
--->
-</style>
+  <title>MasterTicket</title>
+  <meta name="description" content="Getting Grades in 471 Final Projects" />
+  <meta name="keywords" content="CPSC471 Project" />
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
+  <link rel="stylesheet" type="text/css" href="style/style.css" title="style" />
 </head>
-<body bgcolor=\"#FFFFFF\">
 
-  <table border=\"0\" width=\"900\" align=\"center\" height=\"19\" >
-    <tr bgcolor=\"#D2E9FF\"> 
-      <td width=\"100%\" height=\"90\" align=\"center\" valign=\"absmiddle\"><font color=\"#000080\">
-	  <span class=\"headd\"><strong><big>&nbsp; The AppServ Open Project - "._APPVERSION." "._FOR." "._OS." <br>Now you running on <font color=\"#FF0000\">PHP $phpver</font></big></strong></span></font></td>
-    </tr>
-  </table>
-
-<div align=\"center\"> 
-  <table width=\"800\" border=\"0\">
-    <tr bgcolor=\"#F9FBFF\"> 
-      <td height=\"344\"> 
-        <blockquote> 
-          <p><font color=\"#000080\"><span class=\"headd\"><strong><br>
-	            <img src=\"appserv/members.gif\" width=\"20\"
-    height=\"20\" align=\"absmiddle\"> <span class=\"app\"><a href=\""._LPHPMYADMIN."/\">"._PHPMYADMIN." "._VERSION." "._VPHPMYADMIN."</a><br>
-	            <img
-    src=\"appserv/PHP-logo.gif\" width=\"40\" height=\"21\" align=\"absmiddle\"> <a href=\"phpinfo.php\">"._PHPINFO." "._VERSION."</a> <br>
-   </strong></span></font> </p>
-          <p><span class=\"app\"><u>"._ABOUT." "._APPSERV." "._VERSION." "._APPVERSION." "._FOR." "._OS."</u><br>
-            "._APPSERV." "._IS." <br><blockquote>
-            <li><b><a href=\"http://httpd.apache.org\" target=\"_blank\"> "._APACHE."</b> "._VERSION." <b>"._VAPACHE."</b></a><br>
-            <li><b><a href=\"http://www.php.net\" target=\"_blank\">"._PHP."</b> "._VERSION." <b>"._VPHP." & "._VPHP7."</b></a><br>
-            <li><b><a href=\"http://www.mysql.com\" target=\"_blank\">"._MYSQL."</b> "._VERSION." <b>"._VMYSQL."</b></a><br>
-            <li><b><a href=\"http://www.phpmyadmin.net\" target=\"_blank\">"._PHPMYADMIN."</b> "._VERSION." <b>"._VPHPMYADMIN."</b></a><br>
-			</blockquote>
-			</span> 
-          </p>
-        </blockquote>
+<body>
+<?php $_SESSION["userType"] = "default" ?>
+  <div id="main">
+    <div id="header">
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
+		  <!-- Make sure you put the proper page name here -->
+          <h2>Home Page</h2>
+        </div>
+      </div>
+      <?php include 'menu.php'; ?>
+    </div>
+    <div id="site_content">
+      <div class="sidebar">
+        <!-- insert your sidebar items here -->
+        <h3>Latest News</h3>
+        <h4>New Website Launched</h4>
+        <h5>January 1st, 2010</h5>
+        <p>2010 sees the redesign of our website. Take a look around and let us know what you think.<br /><a href="#">Read more</a></p>
+        <p></p>
+        <h4>New Website Launched</h4>
+        <h5>January 1st, 2010</h5>
+        <p>2010 sees the redesign of our website. Take a look around and let us know what you think.<br /><a href="#">Read more</a></p>
+        <h3>Useful Links</h3>
         <ul>
-          <li><a href=\"appserv/ChangeLog.txt\"><span class=\"app\">"._CHANGELOG."</span></a></li>
-          <li> <a href=\"appserv/README-$appservlang.php?appservlang=$appservlang\"><span class=\"app\">"._README."</span></a></li>
-          <li><a href=\"appserv/AUTHORS.txt\"><span class=\"app\">"._AUTHOR."</span></a></li>
-          <li><a href=\"appserv/COPYING.txt\"><span class=\"app\">"._COPYING."</span></a></li>
-		 </li> </ul></span>
-          <span class=\"supp\"><b>"._OFSITE." : </b> <a href=\"http://www.AppServ.org/?appserv-"._APPVERSION."\" target=\"_blank\">http://www.AppServ.org</a><br></span>
-          <span class=\"supp\"><b>"._HSUP." :</b> <a href=\"http://www.AppServHosting.com/?appserv-"._APPVERSION."\" target=\"_blank\">http://www.AppServHosting.com</a>  </span>
-<br>
-<br>
-<span class=\"app\"><b> "._LANG." : </b><a href=\"index.php?appservlang=en\"><img src=\"appserv/flag-english.png\" width=\"30\" height=\"16\" align=\"absmiddle\" border=\"0\"></a>&nbsp; <a href=\"index.php?appservlang=th\"><img src=\"appserv/flag-thai.png\" width=\"30\" height=\"16\" align=\"absmiddle\" border=\"0\"></a>
-<br><br>
-      </td>
-    </tr>
-  </table>  
-
-  <table border=\"0\" width=\"900\" align=\"center\" height=\"19\" >
-    <tr> 
-	  <td width=\"100%\" height=\"60\" align=\"center\" valign=\"absmiddle\" bgcolor=\"#D2E9FF\">
-	  <font color=\"#000080\" class=\"headd\">&nbsp;&nbsp;&nbsp;<img src=\"appserv/softicon.gif\" width=\"20\" height=\"20\" align=\"absmiddle\">&nbsp;<b>"._SLOGAN."</b> </font></td>
-    </tr>
-  </table>
-
-
+          <li><a href="#">link 1</a></li>
+          <li><a href="#">link 2</a></li>
+          <li><a href="#">link 3</a></li>
+          <li><a href="#">link 4</a></li>
+        </ul>
+        <h3>Search</h3>
+        <form method="post" action="#" id="search_form">
+          <p>
+            <input class="search" type="text" name="search_field" value="Enter keywords....." />
+            <input name="search" type="image" style="border: 0; margin: 0 0 -9px 5px;" src="style/search.png" alt="Search" title="Search" />
+          </p>
+        </form>
+      </div>
+      <div id="content">
+        <!-- insert the page content here -->
+        <h1>Welcome to the colour_blue template</h1>
+        <p>This standards compliant, simple, fixed width website template is released as an 'open source' design (under a <a href="http://creativecommons.org/licenses/by/3.0">Creative Commons Attribution 3.0 Licence</a>), which means that you are free to download and use it for anything you want (including modifying and amending it). All I ask is that you leave the 'design from HTML5webtemplates.co.uk' link in the footer of the template, but other than that...</p>
+        <p>This template is written entirely in <strong>HTML5</strong> and <strong>CSS</strong>, and can be validated using the links in the footer.</p>
+        <p>You can view more free HTML5 web templates <a href="http://www.html5webtemplates.co.uk">here</a>.</p>
+        <p>This template is a fully functional 5 page website, with an <a href="examples.php">examples</a> page that gives examples of all the styles available with this design.</p>
+        <h2>Browser Compatibility</h2>
+        <p>This template has been tested in the following browsers:</p>
+        <ul>
+          <li>Internet Explorer 8</li>
+          <li>Internet Explorer 7</li>
+          <li>FireFox 3.5</li>
+          <li>Google Chrome 6</li>
+          <li>Safari 4</li>
+        </ul>
+      </div>
+    </div>
+    <div id="content_footer"></div>
+    <div id="footer">
+      Copyright &copy; colour_blue | <a href="http://validator.w3.org/check?uri=referer">HTML5</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> | <a href="http://www.html5webtemplates.co.uk">design from HTML5webtemplates.co.uk</a>
+    </div>
+  </div>
 </body>
 </html>
-";
-?>

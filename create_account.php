@@ -1,3 +1,7 @@
+<?php
+	// Start Session
+	session_start();
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -15,20 +19,12 @@
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
-          <h1><a href="index.html">colour<span class="logo_colour">blue</span></a></h1>
-          <h2>Simple. Contemporary. Website Template.</h2>
+          <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
+		  <!-- Make sure you put the proper page name here -->
+          <h2>Home Page</h2>
         </div>
       </div>
-      <div id="menubar">
-        <ul id="menu">
-          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-          <li><a href="index.html">Home</a></li>
-          <li class="selected"><a href="examples.html">Examples</a></li>
-          <li><a href="page.html">A Page</a></li>
-          <li><a href="another_page.html">Another Page</a></li>
-          <li><a href="contact.html">Contact Us</a></li>
-        </ul>
-      </div>
+      <?php include 'menu.php'; ?>
     </div>
     <div id="content_header"></div>
     <div id="site_content">
