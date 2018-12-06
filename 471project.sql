@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS cpsc471.Fan (
   FBirthDate DATE NOT NULL,
   PRIMARY KEY (FanID),
   UNIQUE(FLogin));
+INSERT INTO cpsc471.Fan (FanID, FLogin, FPassword, FName, FBirthDate) VALUES
+(1, 'ADMIN', 'ADMIN', 'James Coté', '1989-06-14');
 
 
 -- -----------------------------------------------------
@@ -69,14 +71,16 @@ CREATE TABLE IF NOT EXISTS cpsc471.Payment_Info (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Promoter (
   PromoterID INT NOT NULL,
-  PrName VARCHAR(45) NOT NULL,
-  PrLogin VARCHAR(45) NOT NULL,
-  PrPassword VARCHAR(45) NOT NULL,
-  PrDescription VARCHAR(140) NOT NULL,
+  Name VARCHAR(45) NOT NULL,
+  Login VARCHAR(45) NOT NULL,
+  Password VARCHAR(45) NOT NULL,
+  Description VARCHAR(140) NOT NULL,
   PromoterType VARCHAR(45) NOT NULL,
-  PRIMARY KEY (PromoterID, PrName),
-  UNIQUE (PrLogin),
-  UNIQUE (PrName));
+  PRIMARY KEY (PromoterID),
+  UNIQUE (Login),
+  UNIQUE (Name));
+INSERT INTO cpsc471.Promoter (PromoterID, Name, Login, Password, Description, PromoterType) VALUES
+(12, 'Baseline', 'BASELINE', 'BASELINE', 'The Progenitor of all things Rock and or Roll!', 'Artist');
 
 
 -- -----------------------------------------------------
@@ -233,20 +237,38 @@ CREATE TABLE IF NOT EXISTS cpsc471.Sold_By (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Venue (
   Name VARCHAR(45) NOT NULL,
-  EventID INT NOT NULL,
   StreetNum INT NOT NULL,
   StreetName VARCHAR(45) NOT NULL,
   City VARCHAR(45) NOT NULL,
   Province VARCHAR(45) NOT NULL,
   Capacity INT NOT NULL,
   PRIMARY KEY (Name),
-  CONSTRAINT VenueEventID
-    FOREIGN KEY (EventID)
-    REFERENCES cpsc471.Event (EventID)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE);
+  UNIQUE KEY (StreetNum, StreetName));
+INSERT INTO cpsc471.Venue (Name, StreetNum, StreetName, City, Province, Capacity) VALUES
+('Scotiabank Saddledome', 555, 'Saddledome Rise SE', 'Calgary', 'Alberta', 19289);
 
-
+-- -----------------------------------------------------
+-- Table cpsc471.Event_Venues
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS cpsc471.Event_Venues (
+	VenueName VARCHAR(45) NOT NULL,
+	EventID INT NOT NULL,
+	PRIMARY KEY (VenueName, EventID),
+	CONSTRAINT VenueNameFK
+		FOREIGN KEY (VenueName)
+		REFERENCES cpsc471.Venue (Name)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	CONSTRAINT VenueEventID
+		FOREIGN KEY (EventID)
+		REFERENCES cpsc471.Event (EventID)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE);
+INSERT INTO cpsc471.Event_Venues (VenueName, EventID) VALUES
+('Scotiabank Saddledome', 1),
+('Scotiabank Saddledome', 2),
+('Scotiabank Saddledome', 3),
+('Scotiabank Saddledome', 4);
 -- -----------------------------------------------------
 -- Table cpsc471.Sports
 -- -----------------------------------------------------
