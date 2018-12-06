@@ -36,9 +36,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Fan (
   FLogin VARCHAR(45) NOT NULL,
   FPassword VARCHAR(45) NOT NULL,
   FName VARCHAR(45) NOT NULL,
-  FBirthDay INT NOT NULL,
-  FBirthMonth INT NOT NULL,
-  FBirthYear INT NOT NULL,
+  FBirthDate DATE NOT NULL,
   PRIMARY KEY (FanID),
   UNIQUE(FLogin));
 
@@ -143,7 +141,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Series (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Event (
   EventID INT NOT NULL,
-  SeriesID INT NOT NULL,
+  SeriesID INT,
   PromoterID INT NOT NULL,
   Name VARCHAR(45) NOT NULL,
   EventTimestamp TIMESTAMP NOT NULL,
@@ -163,7 +161,11 @@ CREATE TABLE IF NOT EXISTS cpsc471.Event (
     REFERENCES cpsc471.Series (SeriesID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
-
+INSERT INTO cpsc471.Event (EventID, SeriesID, PromoterID, Name, EventTimestamp, Description, Duration, NumTicketsRemaining, TicketPrice) VALUES
+(1, NULL, 12, 'Event 1', '2019-01-01 17:00', 'The coolest Event this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(2, NULL, 12, 'Event 2', '2019-11-01 17:00', 'The coolest Event FFFFFFF this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(3, NULL, 12, 'Event 3', '2020-01-01 17:00', 'The coolest Event GGGGGGG this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(4, NULL, 12, 'Event 4', '2018-12-15 17:00', 'The coolest Event ZZZZZZZ this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99);
 
 -- -----------------------------------------------------
 -- Table cpsc471.Ticket
