@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<?php $_SESSION["userType"] = "default" ?>
+<?php $_SESSION["userType"] = "fan" ?>
   <div id="main">
     <div id="header">
       <div id="logo">
