@@ -20,8 +20,9 @@
 			case 'event':
 				if( $eventPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM event WHERE EventID = " . $_GET['ID'] ) )
 				{
-					$SalePrice = mysqli_fetch_array($eventPrice)['TicketPrice'];
-					$NumTicketsRemaining = mysqli_fetch_array($eventPrice)['NumTicketsRemaining'];
+					$row = mysqli_fetch_array($eventPrice);
+					$SalePrice = $row['TicketPrice'];
+					$NumTicketsRemaining = $row['NumTicketsRemaining'];
 					echo "TicketPrice: {$SalePrice}; Remaining: {$NumTicketsRemaining}</br>";
 				}
 				$IDType = "EventID";
@@ -31,8 +32,9 @@
 			case 'series':
 				if( $seriesPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM series WHERE SeriesID = " . $_GET['ID'] ) )
 				{
-					$SalePrice = mysqli_fetch_array($seriesPrice)['TicketPrice'];
-					$NumTicketsRemaining = mysqli_fetch_array($seriesPrice)['NumTicketsRemaining'];
+					$row = mysqli_fetch_array($seriesPrice);
+					$SalePrice = $row['TicketPrice'];
+					$NumTicketsRemaining = $row['NumTicketsRemaining'];
 				}
 				$IDType = "SeriesID";
 				$SeriesOrEvent = TRUE;
@@ -94,7 +96,7 @@
 		// Finished? Close Connection
 		mysqli_close($connection);
 		
-		/* No Errors -> Redirect to Ticket Screen
+		///* No Errors -> Redirect to Ticket Screen
 		if( $Success )
 			header('Location: view_tickets.php?result=success');//*/
 		
