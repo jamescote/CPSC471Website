@@ -1,9 +1,13 @@
 <?php
 	// Start Session
-	session_start();
+    session_start();
+    
 ?>
+
 <!DOCTYPE HTML>
 <html>
+
+    
 
 <head>
   <title>colour_blue - contact us</title>
@@ -15,13 +19,14 @@
 
 <body>
   <div id="main">
+  
     <div id="header">
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Login Page</h2>
+          <h2>Fan Registration Page</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
@@ -30,29 +35,19 @@
     <div id="site_content">
       <div id="content2">
         <!-- insert the page content here -->
-        <h1>Login</h1>
-        <p>Please enter you Login details below</p>
-        <form action="loginVerify.php" method="post">
+        <h1>Account Registration</h1>
+        <p>Please select the type of account you wish to create</p>
+        
+        <form action="fanRegistration.php" method="post">
           <div class="form_settings">
             
-            <p>
-              <span>Username</span>
-              <input class= "contact" type="text" name="user" id="username">
-            </p>
-            <p>
-              <span>Password</span>
-              <input class= "contact" type="password" name="password" id="password">
-            </p>
-
-            <p>
-              <span>Account Type</span>
-                <select name="accountType">
-                  <option value="Fan">Fan</option>
-                  <option value="Promoter">Promoter</option>
-                </select>
-            </p>
+            <p style="padding-top: 0px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Fan" /></p>
+            <div class="form_settings">
+        </form>
+        <form action="promoterRegistration.php" method="post">
             
-            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign in" /></p>
+            
+            <p style="padding-top: 0px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Promoter" /></p>
           </div>
         </form>
       </div>
