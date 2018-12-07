@@ -14,10 +14,9 @@
 
 	if ((mysqli_num_rows($result))>=1){
 
-        alert("user name already resgistered");
-        function alert($msg){
-        echo "<script type='text/javascript'>alert('$msg');</script>";}
-        //echo '<meta http-equiv="Refresh" content="2; url=promoterRegistration.php">';
+    
+        echo "<script type='text/javascript'>alert('user name already resgistered');</script>";
+        echo '<meta http-equiv="Refresh" content="2; url=fanRegistration.php">';
     }
 
     $query = "INSERT INTO Fan (FLogin, FPassword, FName, FBirthDate)
