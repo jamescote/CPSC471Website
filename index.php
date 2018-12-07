@@ -2,7 +2,7 @@
 	// Start Session
 	session_start();
 	
-	if( $_GET['logout'] == 'true' )
+	if( isset($_GET['logout']) && $_GET['logout'] == 'true' )
 	{
 		$_SESSION['userType'] = 'guest';
 		$_SESSION['userID'] = NULL;
@@ -27,10 +27,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-		  <h2>Welcome<?php if ($_SESSION["userName"] != null){
-					echo( " " . $_SESSION["userName"] );
-				} 
-		  ?>!</h2>
+		  <h2>Welcome!</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
