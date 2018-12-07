@@ -33,7 +33,7 @@
 					// Row 3: Ticket Price and link to buy
 					echo "<tr>";
 					echo "<td>";
-					outputCurrencyString($row[TicketPrice]);
+					outputCurrencyString($row['TicketPrice']);
 					echo "</td>";
 					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row[EventID] . "&type=event";?>">Buy Tickets!</a></td>
 					<?php
