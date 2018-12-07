@@ -21,7 +21,7 @@
     }
 
     $query = "INSERT INTO Promoter ( Name, Login, Password, PromoterType)
-  VALUES (" . $_POST["pname"] . " , '$user_name' , " . $_POST["password"] . ", '$promoType')";
+  VALUES ('" . $_POST["pname"] . "' , '$user_name' , '" . $_POST["password"] . "', '$promoType')";
   
   // Get the newly generated SaleID
   $promoID = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];

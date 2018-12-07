@@ -23,7 +23,7 @@
   -->
 <?php else: ?>
   <li><a href="index.php">Home</a></li>
-  <li><a href="create_account.php">Create Account</a></li>
+  <li><a href="newUser.php">Create Account</a></li>
   <li><a href="login.php">Sign In</a></li>
 <?php endif; ?>
 </ul>

@@ -17,7 +17,6 @@
 	if(!($result = mysqli_query($con, $sql))){
 	}
 
-	echo mysqli_num_rows($result);
 
 	while($row = mysqli_fetch_array($result)){
 		if ($accountType == "Fan"){
@@ -29,7 +28,6 @@
 			//$userFname = $row['Fname'];
 			//$userBirthday = $row['FBirthDate'];
 		}elseif($accountType == "Promoter"){
-			
 			$userName = $row['Login'];
 			$password = $row['Password'];
 			$userID = $row['PromoterID'];

@@ -7,12 +7,12 @@
     $user_name = mysqli_real_escape_string($con,$_POST['user']);
     
 	
-    $sql = "SELECT * FROM `Promoter` WHERE Login = '$user_name'";
+    $sql = "SELECT * FROM `Fan` WHERE Login = '$user_name'";
     
         
 	$result = mysqli_query($con, $sql);
 
-	if (mysqli_num_rows($result)>=1){
+	if ((mysqli_num_rows($result))>=1){
 
         alert("user name already resgistered");
         function alert($msg){
@@ -21,7 +21,7 @@
     }
 
     $query = "INSERT INTO Fan (FLogin, FPassword, FName, FBirthDate)
-  VALUES ('$user_name' , " . $_POST["password"] . ", " . $_POST["fname"] . ", " . $_POST["bdate"] . ")";
+  VALUES ('$user_name' , '" . $_POST["password"] . "', '" . $_POST["fname"] . "', '" . $_POST["bdate"] . "')";
   
   // Get the newly generated SaleID
   $promoID = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
