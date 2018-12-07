@@ -47,8 +47,8 @@
             <p>
               <span>Account Type</span>
                 <select name="accountType">
-                  <option value="Fan">Fan</option>
-                  <option value="Promoter">Promoter</option>
+                  <option value="fan">Fan</option>
+                  <option value="promoter">Promoter</option>
                 </select>
             </p>
             

@@ -21,7 +21,7 @@
 	if( $_SESSION['userType'] != "fan" )
 	{
 		// Redirect to Sign up
-		echo "<script> location.href='create_account.php'; </script>";
+		echo "<script> location.href='newUser.php'; </script>";
 		exit;
 	}
 ?>

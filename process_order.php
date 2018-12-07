@@ -13,20 +13,27 @@
 	
 	if( !mysqli_connect_errno($connection) )
 	{
-		$SalePrice; $IDType; $SeriesOrEvent;
+		$SalePrice; $IDType; $SeriesOrEvent; $NumTicketsRemaining;
 		// Fetch Event Information
 		switch( $_GET['type'] )
 		{
 			case 'event':
-				if( $eventPrice = mysqli_query( $connection, "SELECT TicketPrice FROM event WHERE EventID = " . $_GET['ID'] ) )
+				if( $eventPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM event WHERE EventID = " . $_GET['ID'] ) )
+				{
 					$SalePrice = mysqli_fetch_array($eventPrice)['TicketPrice'];
+					$NumTicketsRemaining = mysqli_fetch_array($eventPrice)['NumTicketsRemaining'];
+					echo "TicketPrice: {$SalePrice}; Remaining: {$NumTicketsRemaining}</br>";
+				}
 				$IDType = "EventID";
 				$SeriesOrEvent = FALSE;
 				echo "Series or Event: " . $SeriesOrEvent . "</br>";
 				break;
 			case 'series':
-				if( $seriesPrice = mysqli_query( $connection, "SELECT TicketPrice FROM series WHERE SeriesID = " . $_GET['ID'] ) )
+				if( $seriesPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM series WHERE SeriesID = " . $_GET['ID'] ) )
+				{
 					$SalePrice = mysqli_fetch_array($seriesPrice)['TicketPrice'];
+					$NumTicketsRemaining = mysqli_fetch_array($seriesPrice)['NumTicketsRemaining'];
+				}
 				$IDType = "SeriesID";
 				$SeriesOrEvent = TRUE;
 				break;
@@ -36,10 +43,11 @@
 				break;
 		}
 		// Generate Sale
-		$saleQuery = "INSERT INTO sale (FanID, DollarAmount, SaleDate) VALUE (" . $_SESSION['userID'] . ", " . $SalePrice . ", DATE '" . date('Y-m-d') . "');";
+		$saleDate = date('Y-m-d');
+		$saleQuery = "INSERT INTO sale (FanID, DollarAmount, SaleDate) VALUE ({$_SESSION['userID']}, {$SalePrice}, DATE '{$saleDate}');";
 		if( !mysqli_query($connection, $saleQuery) )
 		{
-			echo "<b>ERROR:</b> Failed Sale Query: " . mysqli_error($connection) . "</br>";
+			echo "<b>ERROR:</b> Failed Sale Query: " . mysqli_error($connection) . "; Query: '{$saleQuery}'</br>";
 			$Success = FALSE;
 		}
 		
@@ -67,14 +75,28 @@
 			$Success = FALSE;
 		}
 		
-		// Update Tickets Remaining
+		echo "<script>alert(Remaining: {$NumTicketsRemaining});</script>";
+		if( $Success )
+		{
+			$NumTicketsRemaining -= $_POST['numTickets'];
+			
+			// Update Tickets Remaining
+			$updateQuery = "UPDATE Event 
+								SET NumTicketsRemaining={$NumTicketsRemaining}
+								WHERE EventID={$_GET['ID']}";
+			if( !mysqli_query($connection, $updateQuery) )
+			{
+				echo "<b>ERROR:</b> Failed Update Query: " . mysqli_error($connection) . "; Query: '" . $updateQuery . "'</br>";
+				$Success = FALSE;
+			}
+		}
 		
 		// Finished? Close Connection
 		mysqli_close($connection);
 		
-		// No Errors -> Redirect to Ticket Screen
+		/* No Errors -> Redirect to Ticket Screen
 		if( $Success )
-			header('Location: view_tickets.php?result=success');
+			header('Location: view_tickets.php?result=success');//*/
 		
 	}
 ?>

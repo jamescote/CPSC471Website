@@ -8,9 +8,9 @@
 	$user_password = mysqli_real_escape_string($con,$_POST['password']);
 	$accountType = $_REQUEST['accountType'];
 	
-	if ($accountType == "Fan"){
+	if ($accountType == "fan"){
 		$sql = "SELECT `FanID`, `FLogin`, `FPassword`, `Fname`, `FBirthDate` FROM `Fan` WHERE FLogin = '$user_name'";
-	}elseif ($accountType == "Promoter"){
+	}elseif ($accountType == "promoter"){
 		$sql = "SELECT `PromoterID`, `Login`, `Password` FROM `Promoter` WHERE Login = '$user_name'";
 	}
 	
@@ -19,7 +19,7 @@
 
 
 	while($row = mysqli_fetch_array($result)){
-		if ($accountType == "Fan"){
+		if ($accountType == "fan"){
 			
 			$userName = $row['FLogin'];
 			$password = $row['FPassword'];
@@ -27,7 +27,7 @@
 			$userID = $row['FanID'];
 			//$userFname = $row['Fname'];
 			//$userBirthday = $row['FBirthDate'];
-		}elseif($accountType == "Promoter"){
+		}elseif($accountType == "promoter"){
 			$userName = $row['Login'];
 			$password = $row['Password'];
 			$userID = $row['PromoterID'];
