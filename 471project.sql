@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXISTS cpsc471.Credit_Card (
   CCID 				INT 		NOT NULL,
   CCType 			VARCHAR(45) NOT NULL,
   CCName 			VARCHAR(45) NOT NULL,
-  CCSecutityCode 	INT 		NOT NULL,
+  CCSecurityCode 	INT 		NOT NULL,
   CCNumber 			CHAR(10)	NOT NULL,
   CCMonth 			INT 		NOT NULL,
   CCYear 			INT 		NOT NULL,
   PRIMARY KEY (CCID),
   UNIQUE(CCNumber));
- INSERT INTO cpsc471.Credit_Card (CCID, CCType, CCName, CCSecutityCode, CCNumber, CCMonth, CCYear) VALUES
+ INSERT INTO cpsc471.Credit_Card (CCID, CCType, CCName, CCSecurityCode, CCNumber, CCMonth, CCYear) VALUES
  (1, 'Visa', 'James C Cote', '123', '1234567890', '09', '21'),
  (2, 'MasterCard', 'Big Bob', '124', '1111111111', '09', '22'),
  (3, 'AMEX', 'Mr. Expired', '113', '2222222222', '09', '17');

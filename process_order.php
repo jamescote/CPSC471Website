@@ -98,7 +98,7 @@
 		
 		///* No Errors -> Redirect to Ticket Screen
 		if( $Success )
-			header('Location: view_tickets.php?result=success');//*/
+			header('Location: view_tickets.php?result=buySuccess');//*/
 		
 	}
 ?>
