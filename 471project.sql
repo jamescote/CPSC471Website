@@ -21,26 +21,30 @@ CREATE TABLE IF NOT EXISTS cpsc471.Credit_Card (
   CCType 			VARCHAR(45) NOT NULL,
   CCName 			VARCHAR(45) NOT NULL,
   CCSecutityCode 	INT 		NOT NULL,
-  CCNumber 			INT 		NOT NULL,
+  CCNumber 			CHAR(10)	NOT NULL,
   CCMonth 			INT 		NOT NULL,
   CCYear 			INT 		NOT NULL,
   PRIMARY KEY (CCID),
   UNIQUE(CCNumber));
+ INSERT INTO cpsc471.Credit_Card (CCID, CCType, CCName, CCSecutityCode, CCNumber, CCMonth, CCYear) VALUES
+ (1, 'Visa', 'James C Cote', '123', '1234567890', '09', '21'),
+ (2, 'MasterCard', 'Big Bob', '124', '1111111111', '09', '22'),
+ (3, 'AMEX', 'Mr. Expired', '113', '2222222222', '09', '17');
 
 
 -- -----------------------------------------------------
 -- Table cpsc471.Fan
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Fan (
-  FanID INT NOT NULL,
+  FanID INT NOT NULL AUTO_INCREMENT,
   FLogin VARCHAR(45) NOT NULL,
   FPassword VARCHAR(45) NOT NULL,
   FName VARCHAR(45) NOT NULL,
   FBirthDate DATE NOT NULL,
   PRIMARY KEY (FanID),
   UNIQUE(FLogin));
-INSERT INTO cpsc471.Fan (FanID, FLogin, FPassword, FName, FBirthDate) VALUES
-(1, 'ADMIN', 'ADMIN', 'James Coté', '1989-06-14');
+INSERT INTO cpsc471.Fan (FLogin, FPassword, FName, FBirthDate) VALUES
+('ADMIN', 'ADMIN', 'James Coté', '1989-06-14');
 
 
 -- -----------------------------------------------------
@@ -49,10 +53,10 @@ INSERT INTO cpsc471.Fan (FanID, FLogin, FPassword, FName, FBirthDate) VALUES
 CREATE TABLE IF NOT EXISTS cpsc471.Payment_Info (
   CCID INT NOT NULL,
   FanID INT NOT NULL,
-  PIStreetNum INT NOT NULL,
-  PIStreetName VARCHAR(45) NOT NULL,
-  PICity VARCHAR(45) NOT NULL,
-  PIProvince VARCHAR(45) NOT NULL,
+  StreetNum INT NOT NULL,
+  StreetName VARCHAR(45) NOT NULL,
+  City VARCHAR(45) NOT NULL,
+  Province VARCHAR(45) NOT NULL,
   PRIMARY KEY (CCID),
   CONSTRAINT PICCID
     FOREIGN KEY (CCID)
@@ -64,13 +68,17 @@ CREATE TABLE IF NOT EXISTS cpsc471.Payment_Info (
     REFERENCES cpsc471.Fan (FanID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
+INSERT INTO cpsc471.Payment_Info (CCID, FanID, StreetNum, StreetName, City, Province) VALUES
+(1, 1, 45, 'Boulevarde of Broken Dreams', 'Fresco', 'Nunavut'),
+(2, 1, 123, '123 ST NW', 'Vancouver', 'British Columbia'),
+(3, 1, 556, 'HollowPoint Cres', 'Mason', 'Masonia');
 
 
 -- -----------------------------------------------------
 -- Table cpsc471.Promoter
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Promoter (
-  PromoterID INT NOT NULL,
+  PromoterID INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(45) NOT NULL,
   Login VARCHAR(45) NOT NULL,
   Password VARCHAR(45) NOT NULL,
@@ -79,8 +87,8 @@ CREATE TABLE IF NOT EXISTS cpsc471.Promoter (
   PRIMARY KEY (PromoterID),
   UNIQUE (Login),
   UNIQUE (Name));
-INSERT INTO cpsc471.Promoter (PromoterID, Name, Login, Password, Description, PromoterType) VALUES
-(12, 'Baseline', 'BASELINE', 'BASELINE', 'The Progenitor of all things Rock and or Roll!', 'Artist');
+INSERT INTO cpsc471.Promoter (Name, Login, Password, Description, PromoterType) VALUES
+('Baseline', 'BASELINE', 'BASELINE', 'The Progenitor of all things Rock and or Roll!', 'Artist');
 
 
 -- -----------------------------------------------------
@@ -106,7 +114,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Followed_By (
 -- Table cpsc471.Sale
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Sale (
-  SaleID INT NOT NULL,
+  SaleID INT NOT NULL AUTO_INCREMENT,
   FanID INT NOT NULL,
   DollarAmount DECIMAL(2) NOT NULL,
   SaleDate DATE NOT NULL,
@@ -122,7 +130,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Sale (
 -- Table cpsc471.Series
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Series (
-  SeriesID INT NOT NULL,
+  SeriesID INT NOT NULL AUTO_INCREMENT,
   PromoterID INT NOT NULL,
   Description VARCHAR(140) NOT NULL,
   NumEvents INT NOT NULL,
@@ -144,11 +152,11 @@ CREATE TABLE IF NOT EXISTS cpsc471.Series (
 -- Table cpsc471.Event
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Event (
-  EventID INT NOT NULL,
+  EventID INT NOT NULL AUTO_INCREMENT,
   SeriesID INT,
   PromoterID INT NOT NULL,
   Name VARCHAR(45) NOT NULL,
-  EventTimestamp TIMESTAMP NOT NULL,
+  EventTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   Description VARCHAR(140) NOT NULL,
   Duration INT NOT NULL,
   NumTicketsRemaining INT NOT NULL,
@@ -165,17 +173,17 @@ CREATE TABLE IF NOT EXISTS cpsc471.Event (
     REFERENCES cpsc471.Series (SeriesID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
-INSERT INTO cpsc471.Event (EventID, SeriesID, PromoterID, Name, EventTimestamp, Description, Duration, NumTicketsRemaining, TicketPrice) VALUES
-(1, NULL, 12, 'Event 1', '2019-01-01 17:00', 'The coolest Event this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
-(2, NULL, 12, 'Event 2', '2019-11-01 17:00', 'The coolest Event FFFFFFF this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
-(3, NULL, 12, 'Event 3', '2020-01-01 17:00', 'The coolest Event GGGGGGG this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
-(4, NULL, 12, 'Event 4', '2018-12-15 17:00', 'The coolest Event ZZZZZZZ this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99);
+INSERT INTO cpsc471.Event (SeriesID, PromoterID, Name, EventTimestamp, Description, Duration, NumTicketsRemaining, TicketPrice) VALUES
+(NULL, 12, 'Event 1', '2019-01-01 17:00', 'The coolest Event this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(NULL, 12, 'Event 2', '2019-11-01 17:00', 'The coolest Event FFFFFFF this side of mount olympus, rocking the socks off err-body!', 60, 0, 49.99),
+(NULL, 12, 'Event 3', '2020-01-01 17:00', 'The coolest Event GGGGGGG this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(NULL, 12, 'Event 4', '2018-12-15 17:00', 'The coolest Event ZZZZZZZ this side of mount olympus, rocking the socks off err-body!', 60, 3, 49.99);
 
 -- -----------------------------------------------------
 -- Table cpsc471.Ticket
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Ticket (
-  Number INT NOT NULL,
+  TicketNumber INT NOT NULL AUTO_INCREMENT,
   EventID INT CHECK( SeriesOrEvent = FALSE ),
   SeriesID INT CHECK( SeriesOrEvent = TRUE ),
   SellerID INT NOT NULL,
@@ -183,7 +191,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Ticket (
   PriceSold DECIMAL(2) NOT NULL,
   CurrentPrice DECIMAL(2) NOT NULL,
   SeriesOrEvent BOOLEAN NOT NULL,
-  PRIMARY KEY (Number),
+  PRIMARY KEY (TicketNumber),
   CONSTRAINT TicketSellerID
     FOREIGN KEY (SellerID)
     REFERENCES cpsc471.Fan (FanID)
