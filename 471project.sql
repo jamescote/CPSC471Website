@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Ticket (
   TicketNumber INT NOT NULL AUTO_INCREMENT,
   EventID INT CHECK( SeriesOrEvent = FALSE ),
   SeriesID INT CHECK( SeriesOrEvent = TRUE ),
-  SellerID INT NOT NULL,
+  SellerID INT,
   SaleID INT NOT NULL,
   PriceSold DECIMAL(10,2) NOT NULL,
   CurrentPrice DECIMAL(10,2) NOT NULL,

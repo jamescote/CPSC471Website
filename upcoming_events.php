@@ -10,8 +10,8 @@
 	{
 		// Fetch Next 3 Closest Events
 		$query = "SELECT E.EventID, E.Name, E.EventTimestamp, E.Description, E.TicketPrice
-		FROM event as E
-		WHERE E.EventTimestamp > NOW()
+		FROM Event as E
+		WHERE E.EventTimestamp > NOW() AND E.NumTicketsRemaining > 0
 		ORDER BY E.EventTimestamp ASC
 		LIMIT 3";
 		if( $res = mysqli_query($con,$query) )
@@ -23,16 +23,18 @@
 				{
 					// Row 1: Name and Date
 					echo "<tr>";
-					echo "<td><b>" . $row[Name] . "</b></td>";
-					echo "<td>" . $row[EventTimestamp] . "</td>";
+					echo "<td><b>" . $row['Name'] . "</b></td>";
+					echo "<td>" . $row['EventTimestamp'] . "</td>";
 					echo "</tr>";
 					// Row 2: Description
 					echo "<tr>";
-					echo "<td colspan='2'>" . $row[Description] . "</td>";
+					echo "<td colspan='2'>" . $row['Description'] . "</td>";
 					echo "</tr>";
 					// Row 3: Ticket Price and link to buy
 					echo "<tr>";
-					echo "<td>" . $row[TicketPrice] . "</td>";
+					echo "<td>";
+					outputCurrencyString($row[TicketPrice]);
+					echo "</td>";
 					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row[EventID] . "&type=event";?>">Buy Tickets!</a></td>
 					<?php
 				}

@@ -81,6 +81,9 @@
 					{
 						$eventRow = mysqli_fetch_array($event);
 						echo "<h1>" . $eventRow['Name'] . "</h1>";
+						?>
+						<form action="process_order.php?ID=<?php echo $EventID; ?>&type=<?php echo $_GET['type'];?>" method="post">
+						<?php
 						echo "<table>";
 						echo "<tr><td><b>When:</b></td>";
 						echo "<td>" . $eventRow['EventTimestamp'] . "</td></tr>";
@@ -103,6 +106,7 @@
 						}
 						else
 							echo "<td>No Venue Found!</td>";
+						
 						// Promoter Information:
 						echo "<tr><td><b>Promoter:</b></td>";
 						if( $promoter = mysqli_query($con, "SELECT * FROM promoter WHERE PromoterID=" . $eventRow['PromoterID']))
@@ -121,16 +125,25 @@
 										echo "<em>Followed</em>";
 									else
 									{
-										echo "<form action='' method='post'>
-										<input type='submit' name'followBtn' value='Follow Promoter' />
-										</form>";
+										?>
+										<button onclick="updateFollowBtn()" id="followBtn">Follow Promoter</button>
 										
-										// Handle Button Logic
-										if( isset($_POST['followBtn']) )
+										<script> // Script for followBtn -> Adds Follow Value to followed by table
+										function updateFollowBtn()
 										{
-											echo "followBtn.disabled = true";
-											echo "<em style='background-color:MediumSeaGreen;'>Followed!</em>";
+											var followBtn = document.getElementById("followBtn");
+											followBtn.innerText = "Followed!";
+											followBtn.disabled = true;
+											<?php // Add Value to Followed_by table.
+												if( !addFollowedBy($con, $promoterRow['PromoterID'], $_SESSION['userID'] ) )
+												{
+													echo "followBtn.innerText = 'ERROR: Follow Failed!';";
+												}
+											?>
 										}
+										</script>
+										<?php
+										
 									}
 								}
 								else
@@ -141,9 +154,77 @@
 							}
 						}
 						else
-							echo "<td>No Promoter Found!</td>";
+							echo "<td>No Promoter Found!</td></tr>";
+						
+						// Ticket Information
+						echo "<tr><td><b>Ticket Price:</b></td>";
+						echo "<td>";
+						outputCurrencyString($eventRow['TicketPrice']);
+						if( $eventRow['NumTicketsRemaining'] <= 0 )
+							echo "<font color='red'>SOLD OUT!</font>";
+						echo "</td></tr>"; // End Ticket Price
+						
+						// Option to Buy:
+						if( $eventRow['NumTicketsRemaining'] > 0 )
+						{
+							echo "<tr><td><b>Payment Option:</b></td>";
+							
+							$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM credit_card WHERE CCID IN (SELECT CCID FROM payment_info WHERE FanID=" . $_SESSION['userID'] . ")";
+							$payResult = mysqli_query($con, $payQuery);
+							
+							if( !$payResult )
+								echo "<td><b>ERROR:</b> Query Failed! '" . $payQuery . "'.";
+							elseif( mysqli_num_rows($payResult) == 0)
+							{
+								echo "<td>Oops! You have no Payment Options set up yet! :(</td></tr>";
+							}
+							else
+							{
+								// Drop Down Selection for Payment Options
+								?>
+								<td>
+								<select name="paymentChoice">
+									<?php
+										while( $payRow = mysqli_fetch_array($payResult))
+										{
+											$expDate = date_create_from_format('d-m-y', '31-' . $payRow['CCMonth'] . '-' . $payRow['CCYear']);
+											if( date_format($expDate, "Y-m-d") >= date("Y-m-d") )
+												echo "<option value='" . $payRow['CCID'] . "'>" . $payRow['CCNumber'] . " (exp: " . $payRow['CCMonth'] . "/" . $payRow['CCYear'] . " - " . $payRow['CCType'] . ")</option>";
+										}
+									?>
+								</select>
+								</td>
+								<?php
+							}
+							
+							// Number of Tickets to purchase
+							echo "<tr><td><b>Number of Tickets:</b></td>";
+							?>
+							<td>
+							
+								<select name="numTickets">
+								<?php
+									$num = 1; // Give options for a maximum of 5 tickets to buy limited by remaining amount.
+									while( ($num <= 5) && ($num <= $eventRow['NumTicketsRemaining']) )
+									{
+										echo "<option value='" . $num . "'>" . $num . "</option>";
+										$num++;
+									}
+								?>
+								</select>
+							</td></tr>
+							<?php
+							
+							// Ticket buy button
+							echo "<tr><td colspan=2>";
+							?>
+							<INPUT TYPE="SUBMIT" VALUE="Get Tickets!">
+							<?php
+							echo "</td></tr>";
+						}
 						
 						echo "</table>";
+						echo "</form>";
 					}
 					else
 						echo "<b>ERROR:</b> Ticket Not Found.";
