@@ -43,6 +43,14 @@
               <span>Password</span>
               <input class= "contact" type="password" name="password" id="password">
             </p>
+
+            <p>
+              <span>Account Type</span>
+                <select name="accountType">
+                  <option value="Fan">Fan</option>
+                  <option value="Promoter">Promoter</option>
+                </select>
+            </p>
             
             <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign in" /></p>
           </div>
