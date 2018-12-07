@@ -14,14 +14,12 @@
 
 	if (mysqli_num_rows($result)>=1){
 
-        alert("user name already resgistered");
-        function alert($msg){
-        echo "<script type='text/javascript'>alert('$msg');</script>";}
-        //echo '<meta http-equiv="Refresh" content="2; url=promoterRegistration.php">';
+        echo "<script type='text/javascript'>alert('user name already resgistered');</script>";
+        echo '<meta http-equiv="Refresh" content="2; url=promoterRegistration.php">';
     }
 
-    $query = "INSERT INTO Promoter ( Name, Login, Password, PromoterType)
-  VALUES ('" . $_POST["pname"] . "' , '$user_name' , '" . $_POST["password"] . "', '$promoType')";
+    $query = "INSERT INTO Promoter ( Name, Login, Password, Description, PromoterType)
+  VALUES ('{$_POST["pname"]}', '{$user_name}', '{$_POST["password"]}', '{$_POST["description"]}', '{$promoType}')";
   
   // Get the newly generated SaleID
   $promoID = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
@@ -32,7 +30,7 @@
   {
     echo "<p>Account Successfully created!</p>";
     session_regenerate_id(true);
-		$_SESSION['userType'] = "Promoter";
+		$_SESSION['userType'] = "promoter";
 		$_SESSION['userID'] = $promoID;
     // Redirect to this page if successfully inserted data
     header('Location: index.php');
