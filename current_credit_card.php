@@ -26,7 +26,7 @@
 					echo '</tr>';
 					// Row 2: Description
 					echo '<tr>';
-					echo '<td>' . $row[CCNumber] . '</td>';
+					echo '<td colspan="2">' . $row[CCNumber] . '</td>';
                     echo '</tr>';
                     // Divider
                     echo '<tr>';
