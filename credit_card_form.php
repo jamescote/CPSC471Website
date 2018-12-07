@@ -86,7 +86,36 @@
 					<input id="yearExpire" name="yearExpire" class="element text medium" type="text" maxlength="255" value=""/> 
 				</div> 
 			</li>
-			
+				<h2>Address</h2>
+				<p>Enter a billing address.</p>
+			<li id="li_10" >
+				<label class="description" for="element_10"> Street Number </label>
+				<div>
+					<input id="piStreetNum" name="piStreetNum" class="element text medium" type="text" maxlength="255" value=""/> 
+				</div> 
+			</li>
+			<li id="li_11" >
+				<label class="description" for="element_11"> Street Name </label>
+				<div>
+					<input id="piStreetName" name="piStreetName" class="element text medium" type="text" maxlength="255" value=""/> 
+				</div> 
+			</li>
+			<li id="li_12" >
+				<label class="description" for="element_12"> City </label>
+				<div>
+					<input id="piCity" name="piCity" class="element text medium" type="text" maxlength="255" value=""/> 
+				</div> 
+			</li>
+			<li id="li_13" >
+				<label class="description" for="element_12"> Province </label>
+				<div>
+					<input id="piProvince" name="piProvince" class="element text medium" type="text" maxlength="255" value=""/> 
+				</div> 
+			</li>
+
+			<li class="section_break"> </li>
+
+
 			<div class="buttons">
 				<input type="hidden" name="form_id" value="39437" />
 				<input id="submit" class="button_text" type="submit" name="submit" value="Submit" />
@@ -102,3 +131,4 @@
   </div>
 </body>
 </html>
+
