@@ -35,4 +35,28 @@
 		</script>
 		<?php
 	}
+	
+	// Will output all fields and results from a query.
+	function outputResultTable( $result )
+	{
+		echo "<table>";
+		// Display all available tickets
+		echo "<tr>";
+		for( $i = 0; $i < mysqli_num_fields($res); $i++)
+		{
+			$field_info = mysqli_fetch_field($res);
+			echo "<th>{$field_info->name}</th>";
+		}
+		echo "</tr>";
+		while( $row = mysqli_fetch_array($res) )
+		{
+			echo "<tr>";
+			for( $i = 0; $i < mysqli_num_fields($res); $i++)
+			{
+				echo "<td>{$row[$i]}</td>";
+			}
+			echo "</tr>";
+		}
+		echo "</table>";
+	}
 ?>

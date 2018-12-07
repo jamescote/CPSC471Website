@@ -9,6 +9,7 @@
 	
 	// Connect to Database
 	$connection = dbConnect();
+	$Success = TRUE;
 	
 	if( !mysqli_connect_errno($connection) )
 	{
@@ -31,12 +32,16 @@
 				break;
 			default:
 				echo "<b>ERROR:</b> Incorrect Ticket Type Specified!</br>";
+				$Success = FALSE;
 				break;
 		}
 		// Generate Sale
 		$saleQuery = "INSERT INTO sale (FanID, DollarAmount, SaleDate) VALUE (" . $_SESSION['userID'] . ", " . $SalePrice . ", DATE '" . date('Y-m-d') . "');";
 		if( !mysqli_query($connection, $saleQuery) )
-			echo "<b>ERROR:</b> Failed Query: " . $saleQuery . "</br>";
+		{
+			echo "<b>ERROR:</b> Failed Sale Query: " . mysqli_error($connection) . "</br>";
+			$Success = FALSE;
+		}
 		
 		// Get the newly generated SaleID
 		$saleID = mysqli_fetch_array(mysqli_query($connection, "SELECT LAST_INSERT_ID()"))[0];
@@ -44,11 +49,32 @@
 		// Generate Ticket(s)
 		for( $i = 0; $i < $_POST['numTickets']; $i++ )
 		{
-			$ticketQuery = "INSERT INTO ticket (" . $IDType . ", SaleID, PriceSold, SeriesOrEvent) VALUE (" . $_GET['ID'] . ", " . $saleID . ", " . $SalePrice . ", " . ($SeriesOrEvent ? "TRUE" : "FALSE" ) . ");";
+			$ticketQuery = "INSERT INTO Ticket (" . $IDType . ", SaleID, PriceSold, SeriesOrEvent) 
+				VALUE (" . $_GET['ID'] . ", " . $saleID . ", " . $SalePrice . ", " . ($SeriesOrEvent ? "TRUE" : "FALSE" ) . ");";
 			if( !mysqli_query($connection, $ticketQuery) )
-				echo "<b>ERROR:</b> Failed Query: " . $ticketQuery . "</br>";
+			{
+				echo "<b>ERROR:</b> Failed Ticket Query: " . mysqli_error($connection) . "</br>";
+				$Success = FALSE;
+			}
 		}
+		
 		// Generate Sold_by entry
+		$soldQuery = "INSERT INTO Sold_By (SaleID, PromoterID, FanOrPromoterSale) VALUE 
+			(" . $saleID . ", (SELECT PromoterID FROM Event WHERE EventID=" . $_GET['ID'] . "), TRUE);";
+		if( !mysqli_query($connection, $soldQuery) )
+		{
+			echo "<b>ERROR:</b> Failed Sold By Query: " . mysqli_error($connection) . "; Query: '" . $soldQuery . "'</br>";
+			$Success = FALSE;
+		}
+		
+		// Update Tickets Remaining
+		
+		// Finished? Close Connection
+		mysqli_close($connection);
+		
+		// No Errors -> Redirect to Ticket Screen
+		if( $Success )
+			header('Location: view_tickets.php?result=success');
 		
 	}
 ?>

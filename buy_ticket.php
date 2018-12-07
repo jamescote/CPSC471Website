@@ -152,6 +152,8 @@
 								// End the Table Row
 								echo "</td></tr>";
 							}
+							else
+								echo "<td>No Promoter Found!</td></tr>";
 						}
 						else
 							echo "<td>No Promoter Found!</td></tr>";

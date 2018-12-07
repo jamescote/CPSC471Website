@@ -124,6 +124,8 @@ CREATE TABLE IF NOT EXISTS cpsc471.Sale (
     REFERENCES cpsc471.Fan (FanID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
+INSERT INTO cpsc471.Sale (FanID, DollarAmount, SaleDate) VALUE
+(1, 2049.33, NOW());
 
 
 -- -----------------------------------------------------
@@ -145,7 +147,19 @@ CREATE TABLE IF NOT EXISTS cpsc471.Series (
     FOREIGN KEY (PromoterID)
     REFERENCES cpsc471.Promoter (PromoterID)
     ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT SeriesStartEvent
+    FOREIGN KEY (StartEventID)
+    REFERENCES cpsc471.Event (EventID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+   CONSTRAINT SeriesEndEvent
+    FOREIGN KEY (EndEventID)
+    REFERENCES cpsc471.Event (EventID)
+    ON DELETE CASCADE
     ON UPDATE CASCADE);
+INSERT INTO cpsc471.Series (PromoterID, Description, NumEvents, Name, StartEventID, EndEventID, NumTicketsRemaining, TicketPrice) VALUES
+(1, 'The Series to end all Serieses', 25, 'The Series', 1, 2, 500, 2049.33);
 
 
 -- -----------------------------------------------------
@@ -174,10 +188,10 @@ CREATE TABLE IF NOT EXISTS cpsc471.Event (
     ON DELETE CASCADE
     ON UPDATE CASCADE);
 INSERT INTO cpsc471.Event (SeriesID, PromoterID, Name, EventTimestamp, Description, Duration, NumTicketsRemaining, TicketPrice) VALUES
-(NULL, 12, 'Event 1', '2019-01-01 17:00', 'The coolest Event this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
-(NULL, 12, 'Event 2', '2019-11-01 17:00', 'The coolest Event FFFFFFF this side of mount olympus, rocking the socks off err-body!', 60, 0, 49.99),
-(NULL, 12, 'Event 3', '2020-01-01 17:00', 'The coolest Event GGGGGGG this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
-(NULL, 12, 'Event 4', '2018-12-15 17:00', 'The coolest Event ZZZZZZZ this side of mount olympus, rocking the socks off err-body!', 60, 3, 49.99);
+(NULL, 1, 'Event 1', '2019-01-01 17:00', 'The coolest Event this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(NULL, 1, 'Event 2', '2019-11-01 17:00', 'The coolest Event FFFFFFF this side of mount olympus, rocking the socks off err-body!', 60, 0, 49.99),
+(NULL, 1, 'Event 3', '2020-01-01 17:00', 'The coolest Event GGGGGGG this side of mount olympus, rocking the socks off err-body!', 60, 100, 49.99),
+(NULL, 1, 'Event 4', '2018-12-15 17:00', 'The coolest Event ZZZZZZZ this side of mount olympus, rocking the socks off err-body!', 60, 3, 49.99);
 
 -- -----------------------------------------------------
 -- Table cpsc471.Ticket
@@ -212,6 +226,8 @@ CREATE TABLE IF NOT EXISTS cpsc471.Ticket (
     REFERENCES cpsc471.Event (EventID)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
+INSERT INTO cpsc471.Ticket (SeriesID, SaleID, PriceSold, CurrentPrice, SeriesOrEvent) VALUE
+(1, 1, 2049.33, 2049.33, TRUE);
 
 
 -- -----------------------------------------------------
@@ -222,7 +238,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Sold_By (
   FanID INT CHECK(FanOrPromoterSale = FALSE),
   PromoterID INT CHECK(FanOrPromoterSale = TRUE),
   FanOrPromoterSale BOOLEAN NOT NULL,
-  PRIMARY KEY (SaleID, FanID, PromoterID),
+  PRIMARY KEY (SaleID),
   CONSTRAINT SBSaleID
     FOREIGN KEY (SaleID)
     REFERENCES cpsc471.Sale (SaleID)
