@@ -18,6 +18,7 @@
 <?php $_SESSION["userID"] = 1 ?>
   <div id="main">
     <div id="header">
+  
       <div id="logo">
         <div id="logo_text">
           <!-- class="logo_colour", allows you to change the colour of the text -->
