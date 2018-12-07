@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Followed_By (
 CREATE TABLE IF NOT EXISTS cpsc471.Sale (
   SaleID INT NOT NULL AUTO_INCREMENT,
   FanID INT NOT NULL,
-  DollarAmount DECIMAL(2) NOT NULL,
+  DollarAmount DECIMAL(10,2) NOT NULL,
   SaleDate DATE NOT NULL,
   PRIMARY KEY (SaleID),
   CONSTRAINT SaleFanID
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Series (
   StartEventID INT NOT NULL,
   EndEventID INT NOT NULL,
   NumTicketsRemaining INT NOT NULL,
-  TicketPrice DECIMAL(2) NOT NULL,
+  TicketPrice DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (SeriesID),
   UNIQUE (Name),
   CONSTRAINT SeriesPromoterID
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS cpsc471.Event (
   Description VARCHAR(140) NOT NULL,
   Duration INT NOT NULL,
   NumTicketsRemaining INT NOT NULL,
-  TicketPrice DECIMAL(2) NOT NULL,
+  TicketPrice DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (EventID),
   UNIQUE (Name),
   CONSTRAINT EventPromoterID
@@ -188,8 +188,8 @@ CREATE TABLE IF NOT EXISTS cpsc471.Ticket (
   SeriesID INT CHECK( SeriesOrEvent = TRUE ),
   SellerID INT NOT NULL,
   SaleID INT NOT NULL,
-  PriceSold DECIMAL(2) NOT NULL,
-  CurrentPrice DECIMAL(2) NOT NULL,
+  PriceSold DECIMAL(10,2) NOT NULL,
+  CurrentPrice DECIMAL(10,2) NOT NULL,
   SeriesOrEvent BOOLEAN NOT NULL,
   PRIMARY KEY (TicketNumber),
   CONSTRAINT TicketSellerID
