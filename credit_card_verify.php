@@ -9,13 +9,26 @@ include 'db_functions.php';
   $query = "INSERT INTO Credit_Card (CCType, CCName, CCSecurityCode, CCNumber, CCMonth, CCYear)
   VALUES ('$type' , '$name' , " . $_POST["securityCode"] . ", " . $_POST["cardNumber"] . ", " . $_POST["monthExpire"] . ", " . $_POST["yearExpire"] . ")";
 
-  //$result = mysqli_query($connection, $query);
+if(mysqli_query($conn, $query))
+{
+  echo "<p>Credit Card Added Successfully!</p>";
+  // Redirect to this page if successfully inserted data
+  $ccid = mysqli_fetch_array(mysqli_query($conn, "SELECT LAST_INSERT_ID()"))[0];
+  echo $ccid;
+}
+else
+{
+  echo "ERROR: Could not execute $query." . mysqli_error($conn);
+}
 
-  if(mysqli_query($conn, $query))
+  $queryTwo = "INSERT INTO Payment_Info (CCID, FanID, PIStreetNum, PIStreetName, PICity, PIProvince)
+          VALUES ({$ccid}, 1, '" . $_POST["piStreetNum"] . "', '" . $_POST["piStreetName"] . "', '" . $_POST["piCity"] . "', '" . $_POST["piProvince"] . "')";
+
+  if(mysqli_query($conn, $queryTwo))
   {
     echo "<p>Credit Card Added Successfully!</p>";
     // Redirect to this page if successfully inserted data
-    header('Location: credit_card_page.php');
+    header('Location: account_fan.php');
 
   }
   else
