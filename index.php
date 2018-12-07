@@ -1,6 +1,12 @@
 <?php
 	// Start Session
 	session_start();
+	
+	if( $_GET['logout'] == 'true' )
+	{
+		$_SESSION['userType'] = 'guest';
+		$_SESSION['userID'] = NULL;
+	}
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,8 +20,6 @@
 </head>
 
 <body>
-<?php $_SESSION["userType"] = "fan" ?>
-<?php $_SESSION["userID"] = 1 ?>
   <div id="main">
     <div id="header">
   

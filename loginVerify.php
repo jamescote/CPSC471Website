@@ -6,16 +6,35 @@
 
 	$user_name = mysqli_real_escape_string($con,$_POST['user']);
 	$user_password = mysqli_real_escape_string($con,$_POST['password']);
+	$accountType = $_REQUEST['accountType'];
+	
+	if ($accountType == "fan"){
+		$sql = "SELECT `FanID`, `FLogin`, `FPassword`, `Fname`, `FBirthDate` FROM `Fan` WHERE FLogin = '$user_name'";
+	}elseif ($accountType == "promoter"){
+		$sql = "SELECT `PromoterID`, `Login`, `Password` FROM `Promoter` WHERE Login = '$user_name'";
+	}
+	
+	if(!($result = mysqli_query($con, $sql))){
+	}
+
 
 	$sql = "SELECT `FanID`, `FLogin`, `FPassword`, `Fname`, `FBirthDate` FROM `Fan` WHERE FLogin = '$user_name'";
 	$result = mysqli_query($con, $sql);
 	while($row = mysqli_fetch_array($result)){
-		$userName = $row['FLogin'];
-		$password = $row['FPassword'];
-		//$user_type = $row['type'];
-		$FanID = $row['FanID'];
-		//$userFname = $row['Fname'];
-		//$userBirthday = $row['FBirthDate'];
+		if ($accountType == "fan"){
+			
+			$userName = $row['FLogin'];
+			$password = $row['FPassword'];
+			//$user_type = $row['type'];
+			$userID = $row['FanID'];
+			//$userFname = $row['Fname'];
+			//$userBirthday = $row['FBirthDate'];
+		}elseif($accountType == "promoter"){
+			$userName = $row['Login'];
+			$password = $row['Password'];
+			$userID = $row['PromoterID'];
+
+		}
 	}
 	if($user_password == $password && strcasecmp($user_name, $userName) == 0){
 		echo "Login Successful!";
