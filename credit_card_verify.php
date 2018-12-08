@@ -21,7 +21,7 @@ else
   echo "ERROR: Could not execute $query." . mysqli_error($conn);
 }
 
-  $queryTwo = "INSERT INTO Payment_Info (CCID, FanID, PIStreetNum, PIStreetName, PICity, PIProvince)
+  $queryTwo = "INSERT INTO Payment_Info (CCID, FanID, StreetNum, StreetName, City, Province)
           VALUES ({$ccid}, 1, '" . $_POST["piStreetNum"] . "', '" . $_POST["piStreetName"] . "', '" . $_POST["piCity"] . "', '" . $_POST["piProvince"] . "')";
 
   if(mysqli_query($conn, $queryTwo))
