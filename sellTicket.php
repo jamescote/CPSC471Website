@@ -92,6 +92,85 @@
 				switch ($ticketInfo['SeriesOrEvent'])
 				{
 					case TRUE: // Series
+					$seriesQuery = "SELECT 
+										S.Name AS SeriesName,
+										S.Description AS SeriesDesc,
+										S.NumEvents,
+										E1.EventTimestamp AS StartDate,
+										E2.EventTimestamp AS EndDate,
+										P.PromoterID,
+										P.Name AS PromoterName,
+										P.Description AS PromoterDesc,
+										P.PromoterType
+										FROM Series AS S
+											JOIN Promoter AS P
+												ON S.PromoterID = P.PromoterID
+											JOIN Event AS E1 
+												ON E1.EventID = S.StartEventID
+											JOIN Event AS E2
+												ON E2.EventID = S.EndEventID
+										WHERE S.SeriesID = {$ticketInfo['SeriesID']}";
+										
+						
+						
+						// Perform Query and handle errors
+						if( !($seriesResult = mysqli_query( $conn, $seriesQuery )) )
+						{
+							echo "ERROR: Event Query failed: ".mysqli_error($conn)."; Query: <br>{$seriesQuery}</br>";
+							exit;
+						}
+						
+						// Check that there was a result found
+						if( mysqli_num_rows($seriesResult) == 0 )
+						{
+							echo "ERROR: No results found for event query: {$seriesQuery}";
+							exit;
+						}
+						else
+						{	// Display Table
+							$seriesInfo = mysqli_fetch_array($seriesResult);
+							
+							echo "<h2>{$seriesInfo['SeriesName']}</h2>";
+							echo "<table>";
+							echo "<tr>"; 		// Start Date
+								echo "<td><b>Start Date:</b></td>";
+								echo "<td>{$seriesInfo['StartDate']}</td>";
+							echo "</tr><tr>";	// End Date
+								echo "<td><b>End Date:</b></td>";
+								echo "<td>{$seriesInfo['EndDate']}</td>";
+							echo "</tr><tr>";	// Number of Events
+								echo "<td><b>Number of Events:</b></td>";
+								echo "<td>{$seriesInfo['NumEvents']}</td>";
+							echo "</tr><tr>";	// Description
+								echo "<td><b>Description:</b></td>";
+								echo "<td>{$seriesInfo['SeriesDesc']}</td>";
+							echo "</tr><tr>"; // Promoter
+								echo "<td><b>Promoter:</b></td>";
+								echo "<td>";
+									echo "<b>{$seriesInfo['PromoterName']}</b></br>";
+									echo "{$seriesInfo['PromoterDesc']}</br>";
+									echo "Type: {$seriesInfo['PromoterType']}</br>";
+									displayFollowing($conn, $seriesInfo['PromoterID']);
+								echo "</td>";
+							echo "</tr><tr>";	// What Ticket was purchased for.
+								echo "<td><b>You Paid:</b></td>";
+								echo "<td>";
+									outputCurrencyString( $ticketInfo['PriceSold'] );
+								echo "</td>";
+							echo "</tr><tr>";	// Price to Sell Ticket at.
+								echo "<td><b>How Much are you Asking for this Ticket?</b></td>";
+								echo "<td><input type='number' name='salePrice' value='0.0' min='0.0' max='{$ticketInfo['PriceSold']}' step='any'> <em>Max Price: ";
+									outputCurrencyString($ticketInfo['PriceSold']);
+								echo "</em></td>";
+							echo "</tr><tr>";
+								echo "<td colspan=2><input type='submit' value='Confirm'>"?>  
+								<input type='button' name='cancelBtn' value='Cancel' onclick="window.location='view_tickets.php?result=cancelSuccess'"/>
+								<?php echo "</td>";
+							echo "</tr></table>";							
+						}
+						
+						// Clear Event Result
+						mysqli_free_result($seriesResult);
 						break;
 					case FALSE: // event
 						$eventQuery = "SELECT 
