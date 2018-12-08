@@ -6,7 +6,7 @@
   <li><a href="index.php">Home</a></li>
   <li><a href="browse_tickets.php">Browse Tickets</a></li>
   <li><a href="manage_account.php">Account</a></li>
-    <li><a href="index.php?logout=true">Sign Out</a></li>
+    <!-- <li><a href="index.php?logout=true">Sign Out</a></li> -->
    <!-- 
     <li><a href="credit_card_form.php">Credit Card Form</a></li>
     <li><a href="credit_card_page.php">Credit Card Page</a></li> 
