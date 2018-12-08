@@ -206,12 +206,8 @@
 									  <th style='width:165px;text-align:center'><b>Price:</b> ";
 									  outputCurrencyString($row['PriceSold']);
 							echo "</th>";
-							if( $row['PriceSold'] != 0.0 )
-								echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['TicketNumber']}' method='post'>
+							echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['TicketNumber']}' method='post'>
 										<input type='submit'value='Resell Ticket'></form></th></tr>";
-							else
-								echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['TicketNumber']}' method='post'>
-										<input type='submit' disabled='true' value='Unable to Sell Free Tickets'></form></th></tr>";
 							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td>";
 							echo "<tr>";
 							echo "<td style='width:165px'><b>Number:</b> {$row['TicketNumber']}</td>";

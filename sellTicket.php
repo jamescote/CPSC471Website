@@ -79,8 +79,7 @@
 			{
 				echo "ERROR: Couldn't find ticket.";
 				exit;
-			}
-			
+			}	
 			
 			// All checks passed? Display form
 			if( $valid )
@@ -88,7 +87,7 @@
 				$ticketInfo = mysqli_fetch_array($result);
 				
 				// Form Init
-				echo "<form action='processSale.php?ticketNumber={$TicketNumber}' method='post'>";
+				echo "<form action='processSale.php?ticketNumber={$TicketNumber}' id='sellForm' method='post'>";
 				
 				switch ($ticketInfo['SeriesOrEvent'])
 				{
@@ -170,12 +169,14 @@
 								echo "</td>";
 							echo "</tr><tr>";	// Price to Sell Ticket at.
 								echo "<td><b>How Much are you Asking for this Ticket?</b></td>";
-								echo "<td><input type='number' name='salePrice' min='0.0' max='{$ticketInfo['PriceSold']}' step='any'> <em>Max Price: ";
+								echo "<td><input type='number' name='salePrice' value='0.0' min='0.0' max='{$ticketInfo['PriceSold']}' step='any'> <em>Max Price: ";
 									outputCurrencyString($ticketInfo['PriceSold']);
 								echo "</em></td>";
 							echo "</tr><tr>";
-								echo "<td colspan=2><input type='submit' value='Sell Tickets!'></td>";
-							echo "</tr></table></form>";							
+								echo "<td colspan=2><input type='submit' value='Confirm'>"?>  
+								<input type='button' name='cancelBtn' value='Cancel' onclick="window.location='view_tickets.php?result=cancelSuccess'"/>
+								<?php echo "</td>";
+							echo "</tr></table>";							
 						}
 						
 						// Clear Event Result
