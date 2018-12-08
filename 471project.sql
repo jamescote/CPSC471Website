@@ -17,7 +17,7 @@ USE cpsc471;
 -- Table cpsc471.Credit_Card
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS cpsc471.Credit_Card (
-  CCID 				INT 		NOT NULL,
+  CCID 				INT 		NOT NULL AUTO_INCREMENT,
   CCType 			VARCHAR(45) NOT NULL,
   CCName 			VARCHAR(45) NOT NULL,
   CCSecurityCode 	INT 		NOT NULL,
