@@ -10,8 +10,8 @@
 	{
 		// Fetch All Fan's Credit Cards
 		$query = "SELECT C.CCID, C.CCType, C.CCName, C.CCNumber, C.CCMonth, C.CCYear
-		FROM Credit_Card as C, Fan as F,  Payment_Info as P
-		WHERE F.FanID = P.FanID AND P.CCID = C.CCID ";
+		FROM cpsc471.Credit_Card as C, cpsc471.Fan as F, cpsc471.Payment_Info as P
+		WHERE C.CCID=P.CCID AND P.FanID=F.FanID ";
 		if( $res = mysqli_query($con,$query) )
 		{
 			if( mysqli_num_rows($res) > 0 )
@@ -21,13 +21,24 @@
 				{
 					// Row 1: Name and Type
 					echo '<tr>';
-					echo '<td><b>' . $row[CCName] . '</b></td>';
-					echo '<td>' . $row[CCType] . '</td>';
+					echo '<td><b>Name: ' . $row['CCName'] . '</b></td>';
+					echo '<td>Type: ' . $row['CCType'] . '</td>';
 					echo '</tr>';
 					// Row 2: Description
 					echo '<tr>';
-					echo '<td colspan="2">' . $row[CCNumber] . '</td>';
+					echo '<td colspan="2">Number: ' . $row['CCNumber'] . '</td>';
                     echo '</tr>';
+                    // Delete button
+					echo "<tr>";
+					?> 
+					<td class="card-delete">
+						<form action="delete_credit_card.php" method="post">
+							<input type="hidden" name="name" value="<?php echo $row['CCID']; ?>">
+							<input type="submit" name="submit" value="Delete">
+						</form>
+					</td>
+					<?php
+					echo '</tr>';
                     // Divider
                     echo '<tr>';
 					echo '<td colspan="2">' . ' ' . '</td>';
