@@ -1,4 +1,6 @@
 <?php
+	date_default_timezone_set('America/Edmonton'); // Need to set default timezone to avoid date warnings.
+	
 	// Connect to Database
 	function dbConnect()
 	{
@@ -100,5 +102,15 @@
 		}
 		else
 			echo "<b>ERROR:</b> Unable to form button: {$promoterID}->{$_SESSION['userID']}";
+	}
+	
+	// Returns an html formatted string to display date.
+	function formatDate($dateObj, $fontSize)
+	{
+		$biggerFont = $fontSize + 1;
+		if( 'object' == gettype($dateObj) )
+			return "<font size='{$biggerFont}'>".date_format($dateObj, 'M j, Y')."</font></br><font size='{$fontSize}'>".date_format($dateObj, 'D G:i')."</font>";
+		else
+			return $dateObj;
 	}
 ?>
