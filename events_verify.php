@@ -24,7 +24,9 @@ include 'db_functions.php';
   {
     echo "<p>Event Added Successfully!</p>";
     // Redirect to this page if successfully inserted data
-    header('Location: event_page.php');
+    $eventID = mysqli_fetch_array(mysqli_query($conn, "SELECT LAST_INSERT_ID()"))[0];
+    //header('Location: event_page.php');
+    header("Location: add_venue.php?eventID=$eventID");
 
   }
   else
