@@ -8,7 +8,7 @@
 	// Connected? Query for Upcoming Events
 	if( !mysqli_connect_errno($con) )
 	{
-		// Fetch All Fan's Credit Cards
+		// Fetch All Events
 		$query = "SELECT E.EventID, E.PromoterID, E.Name, E.EventTimestamp, E.Description, E.TicketPrice, E.NumTicketsRemaining
 		FROM Event as E, Promoter as P
         WHERE E.PromoterID = P.PromoterID AND E.EventTimestamp > NOW()
@@ -22,18 +22,29 @@
 				{
 					// Row 1: Name and Type
 					echo '<tr>';
-					echo '<td><b>' . $row[Name] . '</b></td>';
-					echo '<td>' . $row[EventTimestamp] . '</td>';
+					echo '<td><b>' . $row['Name'] . '</b></td>';
+					echo '<td>' . $row['EventTimestamp'] . '</td>';
 					echo '</tr>';
 					// Row 2: Description
 					echo '<tr>';
-					echo '<td colspan="2">' . $row[Description] . '</td>';
+					echo '<td colspan="2">' . $row['Description'] . '</td>';
                     echo '</tr>';
-                    // Row 3: 
+                    // Row 3: Num and Price of Tickets
                     echo '<tr>';
-					echo '<td><b>' . 'Ticket Price: $' . $row[TicketPrice] . '</b></td>';
-					echo '<td>' . 'Remaining Tickets: ' . $row[NumTicketsRemaining] . '</td>';
-                    echo '</tr>';
+					echo '<td><b>' . 'Ticket Price: $' . $row['TicketPrice'] . '</b></td>';
+					echo '<td>' . 'Remaining Tickets: ' . $row['NumTicketsRemaining'] . '</td>';
+					echo '</tr>';
+					// Delete button
+					echo "<tr>";
+					?> 
+					<td class="event-delete">
+						<form action="delete_event.php" method="post">
+							<input type="hidden" name="name" value="<?php echo $row['EventID']; ?>">
+							<input type="submit" name="submit" value="Delete">
+						</form>
+					</td>
+					<?php
+					echo '</tr>';
                     // Divider
                     echo '<tr>';
 					echo '<td colspan="2">' . ' ' . '</td>';
