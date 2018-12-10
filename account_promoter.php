@@ -32,6 +32,7 @@
     <div id="site_content">
       <div class="sidebar">
         <!-- insert your sidebar items here -->
+        <?php include 'user_promoter_info.php'; ?>
       </div>
       <div id="content">
 
