@@ -16,6 +16,14 @@
 </head>
 
 <body>
+<?php // Ensure that user is logged in first.
+	if( $_SESSION['userType'] != "fan" )
+	{
+		// Redirect to Sign up
+		echo "<script> location.href='newUser.php'; </script>";
+		exit;
+	}
+?>
   <div id="main">
     <div id="header">
       <div id="logo">
@@ -174,9 +182,11 @@
 							("" != $endDateFilter);
 			
 			$eventQuery = "SELECT 
+								E.EventID AS ID,
 								E.EventTimestamp AS StartDate,
 								E.Name AS EventName,
 								E.Description,
+								E.NumTicketsRemaining,
 								V.Name AS VenueName,
 								V.City,
 								V.Province,
@@ -189,12 +199,14 @@
 								ON P.PromoterID = E.PromoterID{$followedFilter}";
 			
 			$seriesQuery = "SELECT 
+								S.SeriesID as ID,
 								E1.EventTimestamp AS StartDate,
 								S.Name AS EventName,
 								S.Description,
+								S.NumTicketsRemaining,
 								E2.EventTimestamp AS VenueName,
 								S.NumEvents AS City,
-								S.NumTicketsRemaining AS Province,
+								S.TicketPrice AS Province,
 								P.Name AS PromoterName,
 								P.PromoterType
 						FROM Series AS S
@@ -248,6 +260,16 @@
 						$resultStartDate = date_create_from_format("Y-m-d H:i:s", $row['StartDate']);
 						$resultEndDate = date_create_from_format("Y-m-d H:i:s", $row['VenueName']);
 						$isSeries = ('object' == gettype($resultEndDate) ? true : false);
+						$resaleQuery = "SELECT * FROM Ticket WHERE (SellerID IS NOT NULL) AND ((SeriesOrEvent = TRUE AND SeriesID = {$row['ID']}) OR (SeriesOrEvent = FALSE AND EventID = {$row['ID']}))";
+						$ticketsRemaining = $row['NumTicketsRemaining'];
+						if( ($resaleResult = mysqli_query($conn, $resaleQuery)) or die($resaleQuery."</br></br>".mysqli_error($conn)))
+						{
+							/* Test Table for all values.
+							outputResultTable($resaleResult); exit;//*/
+							$ticketsRemaining += mysqli_num_rows($resaleResult);
+							
+							mysqli_free_result($resaleResult);
+						}
 						
 						// First Row
 						echo "<tr><th style='width:100px'>".formatDate($resultStartDate, 2)."</th>";
@@ -260,8 +282,13 @@
 						echo (!$isSeries ? "</br>{$row['City']}, {$row['Province']}" : "")."</td>";
 						echo "<td>{$row['Description']}</td>";
 						echo "<td>{$row['PromoterType']}</td>";
-						echo "<td style='width:60px;vertical-align:middle'><form action='seeTickets.php?number={$row['TicketNumber']}&type={$isSeries} method='post'>
-									<input style='float:right;height:25px' type='submit'value='See Tickets'></form></td></tr>";
+						echo "<td style='width:60px;vertical-align:middle'>";
+						if( $ticketsRemaining > 0 )
+							echo "<form action='seeTickets.php?number={$row['ID']}&type={$isSeries}' method='post'>
+									<input style='float:right;height:25px' type='submit'value='See Tickets'></form>";
+						else
+							echo "Sold Out!";
+						echo "</td></tr>";
 					}
 					
 					echo "</table>";

@@ -32,7 +32,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Buy Ticket</h2>
+          <h2>See Tickets</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
@@ -41,211 +41,365 @@
     <div id="site_content">
       <div class="sidebar">
         <!-- insert your sidebar items here -->
-        <?php include 'upcoming_events.php' ?>
       </div>
       <div id="content">
         <!-- insert the page content here -->
+		<h1><?php echo ($_GET['type'] ? "Series" : "Event")." Information:";?></h1>
 		<?php
-			if( isset($_GET['ID'], $_GET['type']) && !empty($_GET['ID']) )
-			{
-				$connection = dbConnect();
-				
-				// Connected successfully? Display Ticket Information
-				if( !mysqli_connect_errno($connection) )
-				{
-					switch($_GET['type'])
-					{
-						case "event":
-							displayEvent($connection, $_GET['ID']);
-							break;
-						case "series":
-							displaySeries($connection, $_GET['ID']);
-							break;
-						default:
-							echo "<b>ERROR:</b> Incorrect Ticket Type";
-							break;
-					}
-				}
-				
-			}
-			else
-				echo "<b>ERROR:</b> No Ticket Specified.";
+			$conn = dbConnect();
 			
-			// Function to display an Event using a given EventID
-			function displayEvent($con, $EventID)
+			switch( $_GET['type'] )
 			{
-				// Get Specified Event
-				if( $event = mysqli_query($con, "SELECT * FROM event WHERE EventID=" . $EventID) )
+				case true:
+					generateSeries($conn, $_GET['number']);
+					break;
+				case false:
+					generateEvent($conn, $_GET['number']);
+					break;
+			}
+
+			// Fetch and display information on a series
+			function generateSeries($conn, $ID)
+			{
+				$seriesQuery = "SELECT
+									S.SeriesID,
+									S.Name AS SeriesName,
+									S.Description AS SeriesDescription,
+									S.NumEvents,
+									S.NumTicketsRemaining,
+									S.TicketPrice,
+									E1.Name AS FirstEventName,
+									E1.EventTimestamp AS StartDate,
+									V1.Name AS FirstVenueName,
+									V1.City AS FirstVenueCity,
+									V1.Province AS FirstVenueProvince,
+									E2.Name AS FinalEventName,
+									E2.EventTimestamp AS EndDate,
+									V2.Name AS FinalVenueName,
+									V2.City AS FinalVenueCity,
+									V2.Province AS FinalVenueProvince,
+									S.PromoterID,
+									P.Name AS PromoterName,
+									P.Description AS PromoterDescription,
+									P.PromoterType
+								FROM Series AS S
+									JOIN Event As E1
+										ON S.StartEventID = E1.EventID
+									JOIN Venue AS V1
+										ON V1.Name = (SELECT VenueName 
+														FROM Event_Venues AS EV1
+														WHERE EV1.EventID = S.StartEventID)
+									JOIN Event AS E2
+										ON S.EndEventID = E2.EventID
+									JOIN Venue AS V2
+										ON V2.Name = (SELECT VenueName 
+														FROM Event_Venues AS EV2
+														WHERE EV2.EventID = S.EndEventID)
+									JOIN Promoter AS P
+										ON S.PromoterID = P.PromoterID
+								WHERE S.SeriesID = {$ID}";
+				if( ($res = mysqli_query($conn, $seriesQuery) ) or die($seriesQuery."</br></br>".mysqli_error($conn)))
 				{
-					if( mysqli_num_rows($event) > 0 )
-					{
-						$eventRow = mysqli_fetch_array($event);
-						echo "<h1>" . $eventRow['Name'] . "</h1>";
-						?>
-						<form action="process_order.php?ID=<?php echo $EventID; ?>&type=<?php echo $_GET['type'];?>" method="post">
-						<?php
-						echo "<table>";
-						echo "<tr><td><b>When:</b></td>";
-						echo "<td>" . $eventRow['EventTimestamp'] . "</td></tr>";
-						echo "<tr><td><b>Duration:</b></td>";
-						echo "<td>" . $eventRow['Duration'] . " Minutes.</td></tr>";
-						echo "<tr><td><b>Description:</b></td>";
-						echo "<td>" . $eventRow['Description'] . "</td></tr>";
-						// Display Venue information
-						echo "<tr><td><b>Where:</b></td>";
-						if( $venue = mysqli_query($con, "SELECT * FROM venue WHERE Name = (SELECT Name FROM event_venues WHERE EventID=" . $EventID . ")") )
-						{	// Found Venue:
-							if( mysqli_num_rows($venue) > 0 )
-							{
-								$venueRow = mysqli_fetch_array($venue);
-								echo "<td><b>" . $venueRow['Name'] . "</b><br>";
-								echo $venueRow['StreetNum'] . " " . $venueRow['StreetName'] . "<br>";
-								echo $venueRow['City'] . ", " . $venueRow['Province'] . "<br>";
-								echo "Seating: " . $venueRow['Capacity'] . "</td>";
-							}
-						}
-						else
-							echo "<td>No Venue Found!</td>";
+					if( mysqli_num_rows($res) > 0 )
+					{ // Display Series Information
 						
-						// Promoter Information:
-						echo "<tr><td><b>Promoter:</b></td>";
-						if( $promoter = mysqli_query($con, "SELECT * FROM promoter WHERE PromoterID=" . $eventRow['PromoterID']))
-						{	// Found Promoter:
-							if( mysqli_num_rows($promoter) > 0 )
+						// Fetch Result from Query
+						$seriesRow = mysqli_fetch_array($res);
+						
+						// Create Date objects for the Start and End Dates
+						$startDate = date_create_from_format("Y-m-d H:i:s", $seriesRow['StartDate']);
+						$endDate = date_create_from_format("Y-m-d H:i:s", $seriesRow['EndDate']);
+						
+						// Table with Series Details
+						echo "<table width='100%'>";
+						
+						// First Row: Series Name and Number of Events
+						echo "<tr><td colspan=3><font size='5'>{$seriesRow['SeriesName']}</font></td><td><font size=3>{$seriesRow['NumEvents']} Events</font></td></tr>";
+						
+						// Second Row: Series Description
+						echo "<tr><td><b>Description:</b></td><td colspan=3>{$seriesRow['SeriesDescription']}</td></tr>";
+						
+						// Third Row: Start and End Event Details
+						echo "<tr valign='top'><td><b>First Event:</b></td>";
+							// Start Event
+							echo "<td><font size=3>{$seriesRow['FirstEventName']}</font></br><font size=2>{$seriesRow['FirstVenueName']}</font></br>
+							<font size=1>{$seriesRow['FirstVenueCity']}, {$seriesRow['FirstVenueProvince']}</font></br>";
+							echo "<font size=1>".date_format($startDate, 'D G:i, M j, Y')."</font>";
+							
+							// Final Event
+							echo "</td><td><b>Final Event:</b></td>";
+							echo "<td><font size=3>{$seriesRow['FinalEventName']}</font></br><font size=2>{$seriesRow['FinalVenueName']}</font></br>
+							<font size=1>{$seriesRow['FinalVenueCity']}, {$seriesRow['FinalVenueProvince']}</font></br>";
+							echo "<font size=1>".date_format($endDate, 'D G:i, M j, Y')."</font></td></tr>";
+							
+						// Fourth Row: Promoter Information
+						echo "<tr><td><b>Promoter:</b></td><td colspan=3><u><font size=2.5>{$seriesRow['PromoterName']}</font></u></br>{$seriesRow['PromoterDescription']}</br>";
+						
+							// Additional Information for Music and Sports Promoters
+							switch( $seriesRow['PromoterType'] )
 							{
-								$promoterRow = mysqli_fetch_array($promoter);
-								echo "<td><b>" . $promoterRow['Name'] . "</b><br>";
-								echo $promoterRow['Description'] . "<br>";
-								echo "Type: " . $promoterRow['PromoterType'] . "<br>";
-								
-								// Check to see if user follows promoter
-								if( $follow = mysqli_query($con, "SELECT * FROM followed_by WHERE PromoterID=" . $promoterRow['PromoterID'] . " AND FanID=" . $_SESSION['userID']))
-								{
-									if ( mysqli_num_rows($follow) > 0 )
-										echo "<em>Followed</em>";
-									else
+								case 'Music':
+									$musicQuery = "SELECT Artist, Genre FROM Music WHERE PromoterID = {$seriesRow['PromoterID']}";
+									if( ($musicRes = mysqli_query($conn, $musicQuery ) or die( $musicQuery."</br></br>".mysqli_error($conn))))
 									{
-										?>
-										<button onclick="updateFollowBtn()" id="followBtn">Follow Promoter</button>
-										
-										<script> // Script for followBtn -> Adds Follow Value to followed by table
-										function updateFollowBtn()
+										if( mysqli_num_rows($musicRes) > 0 )
 										{
-											var followBtn = document.getElementById("followBtn");
-											followBtn.innerText = "Followed!";
-											followBtn.disabled = true;
-											<?php // Add Value to Followed_by table.
-												if( !addFollowedBy($con, $promoterRow['PromoterID'], $_SESSION['userID'] ) )
-												{
-													echo "followBtn.innerText = 'ERROR: Follow Failed!';";
-												}
-											?>
+											$musicRow = mysqli_fetch_array($musicRes);
+											echo "{$musicRow['Artist']}, {$musicRow['Genre']}";
 										}
-										</script>
-										<?php
 										
+										// Clear results
+										mysqli_free_result($musicRes);
 									}
-								}
-								else
-									echo "<b>ERROR:</b> Unable to form button: " . $promoterRow['PromoterID'] . "->" . $_SESSION['userID'];
-								
-								// End the Table Row
-								echo "</td></tr>";
+									break;
+								case 'Sports':
+									$sportsQuery = "SELECT League FROM Sports WHERE PromoterID = {$seriesRow['PromoterID']}";
+									if( ($sportsRes = mysqli_query($conn, $sportsQuery)) or die( $sportsQuery."</br></br>".mysqli_error($conn)))
+									{
+										if( mysqli_num_rows($sportsRes) > 0 )
+										{
+											$sportsRow = mysqli_fetch_array($sportsRes);
+											echo "{$sportsRow['League']}";
+										}
+										
+										// Clear Results
+										mysqli_free_result($sportsRes);
+									}
+									break;
+								default:
+									break;
 							}
-							else
-								echo "<td>No Promoter Found!</td></tr>";
-						}
-						else
-							echo "<td>No Promoter Found!</td></tr>";
+						echo "</td></tr>";
+						echo "</table>";
 						
-						// Ticket Information
-						echo "<tr><td><b>Ticket Price:</b></td>";
-						echo "<td>";
-						outputCurrencyString($eventRow['TicketPrice']);
-						if( $eventRow['NumTicketsRemaining'] <= 0 )
-							echo "<font color='red'>SOLD OUT!</font>";
-						echo "</td></tr>"; // End Ticket Price
+						// Display Ticket Options
+						echo "<h1>Tickets:</h1>";
 						
-						// Option to Buy:
-						if( $eventRow['NumTicketsRemaining'] > 0 )
+						// Query to find Tickets for resale by other fans
+						$resaleQuery = "SELECT Ticket.*, Fan.FName
+										FROM Ticket
+											JOIN Fan ON SellerID IS NOT NULL AND SellerID = FanID
+										WHERE SeriesOrEvent = TRUE 
+											AND SellerID IS NOT NULL AND SeriesID = {$seriesRow['SeriesID']}";
+						
+						// Table for Ticket Options
+						echo "<table width='100%'>";
+						
+						// First Row: Titles
+						echo "<tr><th>Seller</th><th>Price</th><th width='100px'>Tickets Remaining</th><th width='70px'>Link to Buy</th></tr>";
+						
+						// Second Row: Tickets from Promoter
+						echo "<tr><td>{$seriesRow['PromoterName']}</td><td>";
+						outputCurrencyString($seriesRow['TicketPrice']);
+						echo "</td><td>{$seriesRow['NumTicketsRemaining']}</td><td>";
+						
+						// Display a button if tickets available, otherwise, sold out.
+						if( $seriesRow['NumTicketsRemaining'] > 0)
 						{
-							echo "<tr><td><b>Payment Option:</b></td>";
-							
-							$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM credit_card WHERE CCID IN (SELECT CCID FROM payment_info WHERE FanID=" . $_SESSION['userID'] . ")";
-							$payResult = mysqli_query($con, $payQuery);
-							
-							if( !$payResult )
-								echo "<td><b>ERROR:</b> Query Failed! '" . $payQuery . "'.";
-							elseif( mysqli_num_rows($payResult) == 0)
+							echo "<form action='buy_Ticket.php?ID={$seriesRow['SeriesID']}&type=series' method='post'>
+										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
+						}
+						else
+							echo "Sold Out!";
+						
+						echo "</td></tr>";
+						
+						// Query for Resale Tickets
+						if( ($ticketRes = mysqli_query($conn, $resaleQuery)) or die($resaleQuery."</br></br>".mysqli_error($conn)))
+						{
+							// Loop through results
+							while( $ticketRow = mysqli_fetch_array($ticketRes) )
 							{
-								echo "<td>Oops! You have no Payment Options set up yet! :(</td></tr>";
-							}
-							else
-							{
-								// Drop Down Selection for Payment Options
-								?>
-								<td>
-								<select name="paymentChoice">
-									<?php
-										while( $payRow = mysqli_fetch_array($payResult))
-										{
-											$expDate = date_create_from_format('d-m-y', '31-' . $payRow['CCMonth'] . '-' . $payRow['CCYear']);
-											if( date_format($expDate, "Y-m-d") >= date("Y-m-d") )
-												echo "<option value='" . $payRow['CCID'] . "'>" . $payRow['CCNumber'] . " (exp: " . $payRow['CCMonth'] . "/" . $payRow['CCYear'] . " - " . $payRow['CCType'] . ")</option>";
-										}
-									?>
-								</select>
-								</td>
-								<?php
+								// Display Seller's Name
+								echo "<tr><td>{$ticketRow['FName']}</td><td>";
+								
+								// Display Sale Price
+								outputCurrencyString($ticketRow['CurrentPrice']);
+								
+								// Only 1 ticket per resale ticket
+								echo "</td><td>1</td>";
+								
+								// Not able to be sold out, display buy button.
+								echo "<td><form action='buy_Ticket.php?ID={$ticketRow['TicketNumber']}&type=resale' method='post'>
+										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
 							}
 							
-							// Number of Tickets to purchase
-							echo "<tr><td><b>Number of Tickets:</b></td>";
-							?>
-							<td>
-							
-								<select name="numTickets">
-								<?php
-									$num = 1; // Give options for a maximum of 5 tickets to buy limited by remaining amount.
-									while( ($num <= 5) && ($num <= $eventRow['NumTicketsRemaining']) )
-									{
-										echo "<option value='" . $num . "'>" . $num . "</option>";
-										$num++;
-									}
-								?>
-								</select>
-							</td></tr>
-							<?php
-							
-							// Ticket buy button
-							echo "<tr><td colspan=2>";
-							?>
-							<INPUT TYPE="SUBMIT" VALUE="Get Tickets!">
-							<?php
-							echo "</td></tr>";
+							// Clear Results
+							mysqli_free_result($ticketRes);
 						}
 						
 						echo "</table>";
-						echo "</form>";
+	
+						// Clear Results
+						mysqli_free_result($res);
 					}
-					else
-						echo "<b>ERROR:</b> Ticket Not Found.";
 				}
-				else
-					echo "<b>ERROR:</b> Event display Query failed.";
-			}
-			
-			// Function to display an Event using a given EventID
-			function displaySeries($con, $SeriesID)
+			}			
+		
+			// Fetch and display information on an event
+			function generateEvent($conn, $ID)
 			{
-				
+				// Event Details
+				$eventQuery = "SELECT
+									E.EventID,
+									E.Name AS EventName,
+									E.Description AS EventDescription,
+									E.Duration,
+									E.NumTicketsRemaining,
+									E.TicketPrice,
+									E.EventTimestamp AS Date,
+									V.Name AS VenueName,
+									V.City,
+									V.Province,
+									V.StreetNum,
+									V.StreetName,
+									V.Capacity,
+									E.PromoterID,
+									P.Name AS PromoterName,
+									P.Description AS PromoterDescription,
+									P.PromoterType
+								FROM Event AS E
+									JOIN Venue AS V
+										ON V.Name = (SELECT VenueName FROM Event_Venues AS EV WHERE EV.EventID = E.EventID)
+									JOIN Promoter AS P
+										ON P.PromoterID = E.PromoterID
+								WHERE E.EventID = {$ID}";
+								
+				// Query DB
+				if( ($res = mysqli_query($conn, $eventQuery) ) or die($eventQuery."</br></br>".mysqli_error($conn)))
+				{
+					// Results Found? Display Event Information
+					if( mysqli_num_rows($res) > 0 )
+					{ // Display event Information
+						// Fetch Results
+						$eventRow = mysqli_fetch_array($res);
+						
+						// Create Date Object for Event Date
+						$date = date_create_from_format("Y-m-d H:i:s", $eventRow['Date']);
+						
+						// Table for Displaying Event Information
+						echo "<table width='100%'>";
+						
+						// Row 1: Display Event Name and Duration
+						echo "<tr><td colspan=3><font size='5'>{$eventRow['EventName']}</font></td><td><font size=3>{$eventRow['Duration']} Minutes</font></td></tr>";
+						
+						// Row 2: Description
+						echo "<tr><td><b>Description:</b></td><td colspan=3>{$eventRow['EventDescription']}</td></tr>";
+						
+						// Row 3: When and Where the event will happen.
+						echo "<tr valign='top'><td><b>When:</b></td>";
+							echo "<td>".formatDate($date, 1)."</td>";
+							echo "<td><b>Where:</b></td>";
+							echo "<td><font size=2>{$eventRow['VenueName']}</font></br>
+							<font size=1>{$eventRow['StreetNum']} {$eventRow['StreetName']}</br>{$eventRow['City']}, {$eventRow['Province']}</br>Capacity: {$eventRow['Capacity']}</font></td></tr>";
+							
+						// Row 4: Promoter Information
+						echo "<tr><td><b>Promoter:</b></td><td colspan=3><u><font size=2.5>{$eventRow['PromoterName']}</font></u></br>{$eventRow['PromoterDescription']}</br>";
+						
+						// Additional Information for Music or Sports Promoters
+							switch( $eventRow['PromoterType'] )
+							{
+								case 'Music':
+									$musicQuery = "SELECT Artist, Genre FROM Music WHERE PromoterID = {$eventRow['PromoterID']}";
+									if( ($musicRes = mysqli_query($conn, $musicQuery ) or die( $musicQuery."</br></br>".mysqli_error($conn))))
+									{
+										if( mysqli_num_rows($musicRes) > 0 )
+										{
+											$musicRow = mysqli_fetch_array($musicRes);
+											echo "{$musicRow['Artist']}, {$musicRow['Genre']}";
+										}
+										
+										// Clear results
+										mysqli_free_result($musicRes);
+									}
+									break;
+								case 'Sports':
+									$sportsQuery = "SELECT League FROM Sports WHERE PromoterID = {$eventRow['PromoterID']}";
+									if( ($sportsRes = mysqli_query($conn, $sportsQuery)) or die( $sportsQuery."</br></br>".mysqli_error($conn)))
+									{
+										if( mysqli_num_rows($sportsRes) > 0 )
+										{
+											$sportsRow = mysqli_fetch_array($sportsRes);
+											echo "{$sportsRow['League']}";
+										}
+										
+										// Clear Results
+										mysqli_free_result($sportsRes);
+									}
+									break;
+								default:
+									break;
+							}
+						echo "</td></tr>";
+						echo "</table>";
+						
+						// Display Ticket Options
+						echo "<h1>Tickets:</h1>";
+						
+						// Query for getting Resale ticket options
+						$resaleQuery = "SELECT Ticket.*, Fan.FName
+										FROM Ticket
+											JOIN Fan ON SellerID IS NOT NULL AND SellerID = FanID
+										WHERE SeriesOrEvent = FALSE 
+											AND SellerID IS NOT NULL AND EventID = {$eventRow['EventID']}";
+						
+						// Table to display Ticket Options
+						echo "<table width='100%'>";
+						
+						// Row 1: Titles
+						echo "<tr><th>Seller</th><th>Price</th><th width='100px'>Tickets Remaining</th><th width='70px'>Link to Buy</th></tr>";
+						
+						// Row 2: Tickets for Sale by Promoter
+						echo "<tr><td>{$eventRow['PromoterName']}</td><td>";
+						outputCurrencyString($eventRow['TicketPrice']);
+						echo "</td><td>{$eventRow['NumTicketsRemaining']}</td><td>";
+						
+						if( $eventRow['NumTicketsRemaining'] > 0)
+						{
+							echo "<form action='buy_Ticket.php?ID={$eventRow['EventID']}&type=event' method='post'>
+										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
+						}
+						else
+							echo "Sold Out!";
+
+						echo "</td></tr>";
+						
+						// Query for resale Tickets
+						if( ($ticketRes = mysqli_query($conn, $resaleQuery)) or die($resaleQuery."</br></br>".mysqli_error($conn)))
+						{
+							// Loop through results and display
+							while( $ticketRow = mysqli_fetch_array($ticketRes) )
+							{
+								// Seller Name
+								echo "<tr><td>{$ticketRow['FName']}</td><td>";
+								// Sale Price
+								outputCurrencyString($ticketRow['CurrentPrice']);
+								
+								// Only 1 Ticket available per resale ticket
+								echo "</td><td>1</td>";
+								
+								// Buy Button
+								echo "<td><form action='buy_Ticket.php?ID={$ticketRow['TicketNumber']}&type=resale' method='post'>
+										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
+							}
+							
+							// Clear Results
+							mysqli_free_result($ticketRes);
+						}
+						
+						echo "</table>";
+	
+						// Clear Results
+						mysqli_free_result($res);
+					}
+				}
 			}
 		?>
       </div>
     </div>
     <div id="content_footer"></div>
     <div id="footer">
-      Copyright &copy; colour_blue | <a href="http://validator.w3.org/check?uri=referer">HTML5</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> | <a href="http://www.html5webtemplates.co.uk">design from HTML5webtemplates.co.uk</a>
+      Copyright &copy; Perogies
     </div>
   </div>
 </body>
