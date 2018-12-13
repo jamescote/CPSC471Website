@@ -37,3 +37,8 @@ style/logo.png
 style/menu.png
 style/menu_select.png
 style/bullet.png
+._view_tickets.php
+._processSale.php
+._process_order.php
+._seeTickets.php
+._sellTicket.php
