@@ -1,4 +1,14 @@
 <?php
+	/****************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Displays information about the event or
+	 *		series, offers a ticket price and presents the
+	 *		user with payment options and the number of 
+	 *		tickets to purchase. The user can then submit
+	 *		to purchase the tickets. These tickets can either
+	 *		be sold by the promoter or by other users.
+	\*********************************************/
 	// Start Session
 	session_start();
 	
@@ -69,8 +79,8 @@
 							displayTicketInfo($con, $ticketsRemaining, $ticketPrice);
 							break;
 						case "resale":
-							displayResale($connection, $ticketPrice);
-							displayTicketInfo($con, 1, $ticketPrice, true);
+							displayResale($connection, $ticketPrice, $ticketsRemaining);
+							displayTicketInfo($con, $ticketsRemaining, $ticketPrice, true);
 							break;
 						default:
 							echo "<b>ERROR:</b> Incorrect Ticket Type";
@@ -229,17 +239,27 @@
 			}
 			
 			// Function to display information of a ticket for resale.
-			function displayResale($con, &$ticketPrice)
+			function displayResale($con, &$ticketPrice, &$numTicketsRemaining)
 			{
-				$resaleQuery = "SELECT Ticket.*, Fan.FName FROM Ticket JOIN Fan ON SellerID IS NOT NULL AND SellerID = FanID WHERE TicketNumber = {$_GET['ID']}";
-				
+				$resaleQuery = "SELECT 
+									Ticket.*, 
+									Fan.FName,
+									COUNT(*) AS NumTix
+								FROM Ticket 
+									JOIN Fan 
+										ON SellerID IS NOT NULL AND SellerID = FanID 
+								WHERE Ticket.SeriesOrEvent = ".($_GET['isseries'] == "true" ? "TRUE" : "FALSE")."
+									AND (Ticket.EventID = {$_GET['ID']} OR Ticket.SeriesID = {$_GET['ID']})
+									AND Ticket.CurrentPrice = {$_GET['price']}";
+
 				// Get Specified Ticket
-				if( $res = mysqli_query($con, $resaleQuery) or die($seriesQuery."</br></br>".mysqli_error($con) ))
+				if( $res = mysqli_query($con, $resaleQuery) or die($resaleQuery."</br></br>".mysqli_error($con) ))
 				{
 					if( mysqli_num_rows($res) > 0 )
 					{
 						$ticketRow = mysqli_fetch_array($res);
 						$ticketsRemaining; $ticketPrice;
+						$numTicketsRemaining = $ticketRow['NumTix'];
 						
 						if( $ticketRow['SeriesOrEvent'] )
 							displaySeries($con, $ticketRow['SeriesID'], $ticketsRemaining, $ticketPrice);
@@ -325,9 +345,9 @@
 				if( $ticketsRemaining > 0 )
 				{
 					//echo "ID: isset?".(isset($_GET['ID']) ? "TRUE" : "FALSE")."/Value: {$_GET['ID']} :: TYPE: isset?".(isset($_GET['type']) ? "TRUE" : "FALSE")."/Value: {$_GET['type']}</br>";
-					echo "<form action='process_order.php?ID={$_GET['ID']}&type={$_GET['type']}' method='post'><tr><td><b>Payment Option:</b></td>";
+					echo "<form action='process_order.php?ID={$_GET['ID']}&type={$_GET['type']}".($isResale ? "&isseries={$_GET['isseries']}" : "")."&price={$price}' method='post'><tr><td><b>Payment Option:</b></td>";
 					
-					$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM Credit_Card WHERE CCID IN (SELECT CCID FROM Payment_Info WHERE FanID=" . $_SESSION['userID'] . ")";
+					$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM credit_card WHERE CCID IN (SELECT CCID FROM payment_info WHERE FanID=" . $_SESSION['userID'] . ")";
 					if( ($payResult = mysqli_query($conn, $payQuery)) or die($payQuery."</br></br>".mysqli_error($conn)))
 					{
 						if( mysqli_num_rows($payResult) == 0)
@@ -357,26 +377,24 @@
 						mysqli_free_result($payResult);
 					}
 					
-					if( !$isResale )
-					{
-						// Number of Tickets to purchase
-						echo "<tr><td><b>Number of Tickets:</b></td>";
-						?>
-						<td>
-						
-							<select name="numTickets">
-							<?php
-								$num = 1; // Give options for a maximum of 5 tickets to buy limited by remaining amount.
-								while( ($num <= 5) && ($num <= $ticketsRemaining) )
-								{
-									echo "<option value='" . $num . "'>" . $num . "</option>";
-									$num++;
-								}
-							?>
-							</select>
-						</td></tr>
+					// Number of Tickets to purchase
+					echo "<tr><td><b>Number of Tickets:</b></td>";
+					?>
+					<td>
+					
+						<select name="numTickets">
 						<?php
-					}
+							$num = 1; // Give options for a maximum of 5 tickets to buy limited by remaining amount.
+							while( ($num <= 5) && ($num <= $ticketsRemaining) )
+							{
+								echo "<option value='" . $num . "'>" . $num . "</option>";
+								$num++;
+							}
+						?>
+						</select>
+					</td></tr>
+					<?php
+
 					
 					// Ticket buy button
 					echo "<tr><td colspan=2>";
@@ -391,7 +409,7 @@
     </div>
     <div id="content_footer"></div>
     <div id="footer">
-      Copyright &copy; colour_blue | <a href="http://validator.w3.org/check?uri=referer">HTML5</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> | <a href="http://www.html5webtemplates.co.uk">design from HTML5webtemplates.co.uk</a>
+      Copyright &copy; Clodhoppers
     </div>
   </div>
 </body>

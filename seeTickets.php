@@ -1,4 +1,13 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Shows information about the upcoming
+	 *		event or series and shows available ticket
+	 *		options for the event. The ticket options show
+	 *		tickets for sale by the promoter or tickets that
+	 *		are for sale by other fans. 
+	 *************************************************/
 	// Start Session
 	session_start();
 	
@@ -176,11 +185,15 @@
 						echo "<h1>Tickets:</h1>";
 						
 						// Query to find Tickets for resale by other fans
-						$resaleQuery = "SELECT Ticket.*, Fan.FName
+						$resaleQuery = "SELECT 
+											Ticket.*, 
+											Fan.FName, 
+											COUNT(*) AS NumTix
 										FROM Ticket
 											JOIN Fan ON SellerID IS NOT NULL AND SellerID = FanID
 										WHERE SeriesOrEvent = TRUE 
-											AND SellerID IS NOT NULL AND SeriesID = {$seriesRow['SeriesID']}";
+											AND SellerID IS NOT NULL AND SeriesID = {$seriesRow['SeriesID']} AND SellerID != {$_SESSION['userID']}
+										GROUP BY Ticket.CurrentPrice";
 						
 						// Table for Ticket Options
 						echo "<table width='100%'>";
@@ -196,7 +209,7 @@
 						// Display a button if tickets available, otherwise, sold out.
 						if( $seriesRow['NumTicketsRemaining'] > 0)
 						{
-							echo "<form action='buy_ticket.php?ID={$seriesRow['SeriesID']}&type=series' method='post'>
+							echo "<form action='buy_Ticket.php?ID={$seriesRow['SeriesID']}&type=series' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
 						}
 						else
@@ -217,10 +230,10 @@
 								outputCurrencyString($ticketRow['CurrentPrice']);
 								
 								// Only 1 ticket per resale ticket
-								echo "</td><td>1</td>";
+								echo "</td><td>{$ticketRow['NumTix']}</td>";
 								
 								// Not able to be sold out, display buy button.
-								echo "<td><form action='buy_ticket.php?ID={$ticketRow['TicketNumber']}&type=resale' method='post'>
+								echo "<td><form action='buy_Ticket.php?ID={$seriesRow['SeriesID']}&type=resale&isseries=true&price={$ticketRow['CurrentPrice']}' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
 							}
 							
@@ -337,11 +350,16 @@
 						echo "<h1>Tickets:</h1>";
 						
 						// Query for getting Resale ticket options
-						$resaleQuery = "SELECT Ticket.*, Fan.FName
+						$resaleQuery = "SELECT 
+											Ticket.*, 
+											Fan.FName,
+											COUNT(*) AS NumTix
 										FROM Ticket
 											JOIN Fan ON SellerID IS NOT NULL AND SellerID = FanID
 										WHERE SeriesOrEvent = FALSE 
-											AND SellerID IS NOT NULL AND EventID = {$eventRow['EventID']}";
+											AND SellerID IS NOT NULL AND EventID = {$eventRow['EventID']}
+											AND SellerID != {$_SESSION['userID']}
+										GROUP BY Ticket.CurrentPrice";
 						
 						// Table to display Ticket Options
 						echo "<table width='100%'>";
@@ -356,7 +374,7 @@
 						
 						if( $eventRow['NumTicketsRemaining'] > 0)
 						{
-							echo "<form action='buy_ticket.php?ID={$eventRow['EventID']}&type=event' method='post'>
+							echo "<form action='buy_Ticket.php?ID={$eventRow['EventID']}&type=event' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
 						}
 						else
@@ -376,10 +394,10 @@
 								outputCurrencyString($ticketRow['CurrentPrice']);
 								
 								// Only 1 Ticket available per resale ticket
-								echo "</td><td>1</td>";
+								echo "</td><td>{$ticketRow['NumTix']}</td>";
 								
 								// Buy Button
-								echo "<td><form action='buy_ticket.php?ID={$ticketRow['TicketNumber']}&type=resale' method='post'>
+								echo "<td><form action='buy_Ticket.php?ID={$eventRow['EventID']}&type=resale&isseries=false&price={$ticketRow['CurrentPrice']}' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
 							}
 							
