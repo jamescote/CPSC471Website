@@ -1,4 +1,14 @@
 <?php
+	/**************************************
+	 * Written By: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: A Series of useful functions used
+	 *		in multiple sections of the website for
+	 *		problems such as: connecting to Database,
+	 *		displaying proper currency format and
+	 *		displaying proper date format. As well as
+	 *		other handy functions.
+	 ******************************************/
 	date_default_timezone_set('America/Edmonton'); // Need to set default timezone to avoid date warnings.
 	
 	// Connect to Database

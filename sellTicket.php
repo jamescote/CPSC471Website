@@ -1,4 +1,15 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Allows user to sell their tickets at
+	 *		market value or a discounted rate. Presents
+	 *		the user with information about the event or
+	 *		series and provides the ability to select how
+	 *		many tickets to sell and at what price.
+	 *		This puts the tickets on the market and redirects
+	 *		the user back to their view tickets page.
+	 *************************************************/
 	// Start Session
 	session_start();
 	
@@ -39,12 +50,12 @@
         <h1>Your Ticket to Sell:</h1>
 		<?php
 			// Validate Information
-			$valid = isset($_GET['ticketNumber']);
+			$valid = isset($_GET['ID']) && isset($_GET['type']);
 			if($valid)
-				$TicketNumber = $_GET['ticketNumber'];
-			else // TicketNumber not found
+				$ID = $_GET['ID'];
+			else // ID not found
 			{
-				echo "ERROR: Invalid Ticket Number";
+				echo "ERROR: Invalid No ID or type Specified";
 				exit;
 			}
 			
@@ -53,15 +64,17 @@
 			
 			// Query for Ticket Information; Verify Ticket belongs to this fan.
 			$TicketQuery = "SELECT 
-								T.TicketNumber, 
 								T.EventID, 
 								T.SeriesID, 
 								T.SaleID,
 								T.PriceSold,
 								T.CurrentPrice,
-								T.SeriesOrEvent
+								T.SeriesOrEvent,
+								COUNT(*) AS NumTix
 							FROM Ticket AS T
-							WHERE T.TicketNumber = {$TicketNumber}
+							WHERE T.SeriesOrEvent = ".($_GET['type'] == "series" ? "TRUE" : "FALSE")." 
+								AND (T.EventID = {$ID} OR T.SeriesID = {$ID})
+								AND PriceSold = {$_GET['price']}
 								AND {$_SESSION['userID']} = (SELECT S.FanID
 																FROM Sale AS S
 																WHERE T.SaleID = S.SaleID)";
@@ -87,7 +100,7 @@
 				$ticketInfo = mysqli_fetch_array($result);
 				
 				// Form Init
-				echo "<form action='processSale.php?ticketNumber={$TicketNumber}' id='sellForm' method='post'>";
+				echo "<form action='processSale.php?ID={$ID}&type={$_GET['type']}&price={$ticketInfo['PriceSold']}' id='sellForm' method='post'>";
 				
 				switch ($ticketInfo['SeriesOrEvent'])
 				{
@@ -123,7 +136,7 @@
 						// Check that there was a result found
 						if( mysqli_num_rows($seriesResult) == 0 )
 						{
-							echo "ERROR: No results found for event query: {$seriesQuery}";
+							echo "ERROR: No results found for series query: {$seriesQuery}";
 							exit;
 						}
 						else
@@ -162,6 +175,12 @@
 								echo "<td><input type='number' name='salePrice' value='0.0' min='0.0' max='{$ticketInfo['PriceSold']}' step='any'> <em>Max Price: ";
 									outputCurrencyString($ticketInfo['PriceSold']);
 								echo "</em></td>";
+							echo "</tr><tr>"; // Number of Tickets to sell
+								echo "<td><b>How many of your tickets are you wanting to sell? (Max: {$ticketInfo['NumTix']})</b></td>";
+								echo "<td><select name='numTickets'>";
+								for( $i = 1; $i <= $ticketInfo['NumTix']; $i++ )
+									echo "<option value='{$i}'>{$i}</option>";
+								echo "</select></td>";
 							echo "</tr><tr>";
 								echo "<td colspan=2><input type='submit' value='Confirm'>"?>  
 								<input type='button' name='cancelBtn' value='Cancel' onclick="window.location='view_tickets.php?result=cancelSuccess'"/>
@@ -251,6 +270,12 @@
 								echo "<td><input type='number' name='salePrice' value='0.0' min='0.0' max='{$ticketInfo['PriceSold']}' step='any'> <em>Max Price: ";
 									outputCurrencyString($ticketInfo['PriceSold']);
 								echo "</em></td>";
+							echo "</tr><tr>"; // Number of Tickets to sell
+								echo "<td><b>How many of your tickets are you wanting to sell? (Max: {$ticketInfo['NumTix']})</b></td>";
+								echo "<td><select name='numTickets'>";
+								for( $i = 1; $i <= $ticketInfo['NumTix']; $i++ )
+									echo "<option value='{$i}'>{$i}</option>";
+								echo "</select></td>";
 							echo "</tr><tr>";
 								echo "<td colspan=2><input type='submit' value='Confirm'>"?>  
 								<input type='button' name='cancelBtn' value='Cancel' onclick="window.location='view_tickets.php?result=cancelSuccess'"/>

@@ -1,24 +1,39 @@
 <?php
+	/*******************************************************\
+	 * Written by: James Coté							   *
+	 * For: CPSC 471 - Databases                           *
+	 * Description: This page processes two type of sale   *
+	 *		Processes, either selling tickets owned by the *
+	 *		current user or cancelling tickets that are    *
+	 *		already for sale by the current user. 		   *
+	 * Queries Used: Just update queries to update the     *
+	 *		seller ID and sale price of the tickets to show*
+	 *		that the ticket is up for sale or that the sale*
+	 *		was cancelled and the tickets are no longer for*
+	 *		sale.										   *
+	\*******************************************************/
+	
 	// using session
 	session_start();
 	
 	include_once 'db_functions.php';
-
-	echo "TicketNumber: " . $_GET['ticketNumber'] . "; sale Price" . $_POST['salePrice'];
 	
 	// Connect to Database
 	$connection = dbConnect();
 
 	// Verify Connection
-	if( !mysqli_connect_errno($connection) )
+	if( !mysqli_connect_errno($connection) && isset($_GET['price']) )
 	{
 		$saleQuery; $returnHeader;
-		if( isset($_GET['ticketNumber']) )
+		if( isset($_GET['ID']) )
 		{
 			// Update Query
 			$saleQuery = "UPDATE Ticket 
 						SET SellerID={$_SESSION['userID']}, CurrentPrice={$_POST['salePrice']}
-						WHERE TicketNumber={$_GET['ticketNumber']}";
+						WHERE SeriesOrEvent = ".($_GET['type'] == "series" ? "TRUE" : "FALSE")."
+							AND (EventID = {$_GET['ID']} OR SeriesID = {$_GET['ID']})
+							AND PriceSold = {$_GET['price']}
+						LIMIT {$_POST['numTickets']}";
 			
 			// Return Header:
 			$returnHeader = 'Location: view_tickets.php?result=saleSuccess';
@@ -28,7 +43,10 @@
 			// Update Query
 			$saleQuery = "UPDATE Ticket 
 						SET SellerID=NULL, CurrentPrice=0.0
-						WHERE TicketNumber={$_GET['cancelSale']}";
+						WHERE SeriesOrEvent = ".($_GET['type'] == "series" ? "TRUE" : "FALSE")."
+							AND (EventID = {$_GET['cancelSale']} OR SeriesID = {$_GET['cancelSale']})
+							AND SellerID = {$_SESSION['userID']}
+							AND PriceSold = {$_GET['price']}";
 				
 			// Return Header:
 			$returnHeader = 'Location: view_tickets.php?result=cancelSuccess';

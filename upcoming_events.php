@@ -1,5 +1,13 @@
 <h3>Upcoming Events</h3>
 <?php
+	/********************
+	 * Written By: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Simple testing section initially
+	 *		used as a way to get familiar with
+	 *		php and mysql. Turned into a ticker-like
+	 *		sidebar menu that showed upcoming events.
+	 *****************************/
 	include_once 'db_functions.php';
 	
 	// Connect to Database

@@ -1,4 +1,13 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Displays information for all upcoming
+	 *		events or series with an option to buy tickets
+	 *		if there are any tickets available to purchase.
+	 *		There are adjustable search parameters that
+	 *		filter the database queries.
+	 *************************************************/
 	// Start Session
 	session_start();
 	

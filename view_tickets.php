@@ -1,4 +1,14 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Displays all tickets that the
+	 *		user currently owns and is currently selling.
+	 * 		For tickets the user is selling, they have
+	 *		the option to cancel the sale which will take
+	 *		them off the market. For tickets the user owns,
+	 *		they can resell them and put them on the market.
+	 *************************************************/
 	// Start Session
 	session_start();
 	
@@ -48,14 +58,13 @@
         <h1>Tickets</h1>
         <?php
 			$con = dbConnect();
-			$sellTicketLink = "sellTicket.php?ticketNumber=";
+			$sellTicketLink = "sellTicket.php?ID=";
 			
 			if( !mysqli_connect_errno($con) )
 			{
 				// Display Tickets for Sale:
 				echo "<h2>Tickets For Sale, By You:</h2>";
-				$ticketSaleQuery = "SELECT 
-									T.TicketNumber, 
+				$ticketSaleQuery = "( SELECT 
 									T.EventID, 
 									T.PriceSold,
 									T.CurrentPrice,
@@ -64,16 +73,17 @@
 									E.EventTimestamp AS Date, 
 									E.Description, 
 									E.Duration,
-									V.VenueName
+									V.VenueName,
+									COUNT(T.EventID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Event AS E 
 							ON NOT T.SeriesOrEvent AND T.EventID = E.EventID
 						JOIN Event_Venues AS V
 							ON V.EventID = E.EventID
 						WHERE T.SellerID = {$_SESSION['userID']}
+						GROUP BY T.EventID, T.PriceSold)
 						UNION
-						SELECT 
-									T.TicketNumber, 
+						(SELECT 
 									T.SeriesID, 
 									T.PriceSold, 
 									T.CurrentPrice,
@@ -82,7 +92,8 @@
 									E1.EventTimestamp AS Date, 
 									Se.Description, 
 									Se.NumEvents,
-									E2.EventTimestamp AS EndDate
+									E2.EventTimestamp AS EndDate,
+									COUNT(T.SeriesID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Series AS Se 
 							ON T.SeriesOrEvent AND T.SeriesID = Se.SeriesID
@@ -91,6 +102,7 @@
 						JOIN Event AS E2
 							ON Se.EndEventID = E2.EventID
 						WHERE T.SellerID = {$_SESSION['userID']}
+						GROUP BY T.SeriesID, T.PriceSold)
 						ORDER BY Date";
 				
 				if( ($res = mysqli_query($con, $ticketSaleQuery)) or die($ticketSaleQuery."<br/><br/>".mysql_error()) )
@@ -99,9 +111,9 @@
 					{
 						/* Test Table for all values.
 						outputResultTable($res); exit;//*/
+						echo "<table style='width:825px'>";
 						while( $row = mysqli_fetch_array($res) )
 						{
-							echo "<table style='width:825px'>";
 							echo "<tr><th><b>{$row['Name']}</b></th>
 									  <th style='text-align:center'><b>Type:</b> ".($row['SeriesOrEvent'] ? "SERIES" : "EVENT")."</th>
 									  <th style='width:165px;text-align:center'><b>Price Bought:</b> ";
@@ -110,11 +122,11 @@
 									  echo "<th style='width:165px;text-align:center'><b>Selling For:</b> ";
 									  outputCurrencyString($row['CurrentPrice']);
 									  echo "</th>";
-								echo "<th  style='width:165px;text-align:center'><form action='processSale.php?cancelSale={$row['TicketNumber']}' method='post'>
+								echo "<th  style='width:165px;text-align:center'><form action='processSale.php?cancelSale={$row['EventID']}&type=".($row['SeriesOrEvent'] ? "series" : "event")."&price={$row['PriceSold']}' method='post'>
 										<input type='submit' value='Cancel Sale'></form></th></tr>";
-							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td>";
+							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td></tr>";
 							echo "<tr>";
-							echo "<td style='width:165px'><b>Number:</b> {$row['TicketNumber']}</td>";
+							echo "<td style='width:165px'><b>Number of Tickets: </b>{$row['NumTix']}</td>";
 							switch($row['SeriesOrEvent'])
 							{
 								case TRUE: // Series
@@ -129,8 +141,8 @@
 									break;
 							}
 							echo "</tr>";
-							echo "</table>";
 						}
+						echo "</table>";
 						
 						// Clear Result
 						mysqli_free_result($res);
@@ -146,8 +158,7 @@
 				
 				// Display Owned Tickets
 				echo "<h2>My Tickets:</h2>"; 
-				$eventQuery = "SELECT 
-									T.TicketNumber, 
+				$eventQuery = "(SELECT 
 									T.EventID, 
 									T.PriceSold, 
 									T.SaleID, 
@@ -157,7 +168,8 @@
 									E.Description, 
 									E.Duration,
 									S.FanID,
-									V.VenueName
+									V.VenueName,
+									COUNT(T.EventID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Event AS E 
 							ON NOT T.SeriesOrEvent AND T.EventID = E.EventID
@@ -166,9 +178,9 @@
 						JOIN Event_Venues AS V
 							ON V.EventID = E.EventID
 						WHERE S.FanID = {$_SESSION['userID']} AND T.SellerID IS NULL
+						GROUP BY T.EventID, T.PriceSold)
 						UNION
-						SELECT 
-									T.TicketNumber, 
+						(SELECT 
 									T.SeriesID, 
 									T.PriceSold, 
 									T.SaleID, 
@@ -178,7 +190,8 @@
 									Se.Description, 
 									Se.NumEvents,
 									S.FanID,
-									E2.EventTimestamp AS EndDate
+									E2.EventTimestamp AS EndDate,
+									COUNT(T.SeriesID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Series AS Se 
 							ON T.SeriesOrEvent AND T.SeriesID = Se.SeriesID
@@ -189,6 +202,7 @@
 						JOIN Event AS E2
 							ON Se.EndEventID = E2.EventID
 						WHERE S.FanID = {$_SESSION['userID']} AND T.SellerID IS NULL
+						GROUP BY T.SeriesID, T.PriceSold)
 						ORDER BY Date";				
 				
 				if( ($res = mysqli_query($con, $eventQuery)) or die($eventQuery."<br/><br/>".mysql_error()) )
@@ -198,25 +212,25 @@
 						/* Test Table for all values.
 						outputResultTable($res); exit;//*/
 						
+						echo "<table style='width:825px'>";
 						while( $row = mysqli_fetch_array($res) )
 						{
-							echo "<table style='width:825px'>";
 							echo "<tr><th colspan=2><b>{$row['Name']}</b></th>
 									  <th style='text-align:center'><b>Type:</b> ".($row['SeriesOrEvent'] ? "SERIES" : "EVENT")."</th>
 									  <th style='width:165px;text-align:center'><b>Price:</b> ";
 									  outputCurrencyString($row['PriceSold']);
 							echo "</th>";
-							echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['TicketNumber']}' method='post'>
-										<input type='submit'value='Resell Ticket'></form></th></tr>";
-							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td>";
+							echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['EventID']}&type=".($row['SeriesOrEvent'] ? "series" : "event")."&price={$row['PriceSold']}' method='post'>
+										<input type='submit'value='Resell Ticket(s)'></form></th></tr>";
+							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td></tr>";
 							echo "<tr>";
-							echo "<td style='width:165px'><b>Number:</b> {$row['TicketNumber']}</td>";
+							echo "<td style='width:165px'><b>Number of Tickets: </b>{$row['NumTix']}</td>";
 							switch($row['SeriesOrEvent'])
 							{
 								case TRUE: // Series
 									echo "<td style='width:165px'><b>From:</b> {$row['Date']}</td>";
 									echo "<td style='width:165px'><b>To:</b> {$row['VenueName']}</td>";
-									echo "<td colspan=2  style='width:330px'><b>Number of Events:</b> {$row['Duration']}</td>";
+									echo "<td colspan=2 style='width:330px'><b>Number of Events:</b> {$row['Duration']}</td>";
 									break;
 								case FALSE: // Event
 									echo "<td style='width:165px'><b>When:</b> {$row['Date']}</td>";
@@ -224,9 +238,9 @@
 									echo "<td colspan=2 style='width:330px'><b>Where:</b> {$row['VenueName']}</td>";
 									break;
 							}
-							echo "</tr>";
-							echo "</table>";
+							echo "</tr>";						
 						}
+						echo "</table>";
 						
 						// Clear Result
 						mysqli_free_result($res);

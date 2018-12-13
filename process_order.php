@@ -1,4 +1,23 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: This will process an order submitted by
+	 * 		the user. Either the user is buying tickets from
+	 *		the promoter, in which case, the number of tickets
+	 *		will be created for the event or series and a sale
+	 *		entry will be created to link the tickets to the
+	 *		user that bought them. Also, a sold_by entry will be
+	 *		created to show that the tickets were sold by the
+	 *		promoter. Otherwise, the user is buying tickets from
+	 *		another user. This means that the tickets that already
+	 *		exist in the database are updated to a new price and
+	 *		sellerID is removed to show the tickets are not for
+	 *		sale anymore. Also, a new sale and sold_by entry are
+	 *		created to link the tickets to the purchasing user by
+	 *		updating the saleID in the tickets and to show that
+	 *		the tickets were sold by another user in the sold_by field.
+	 *************************************************/
 	// using session
 	session_start();
 	
@@ -13,7 +32,7 @@
 	
 	if( !mysqli_connect_errno($connection) )
 	{
-		$SalePrice; $IDType; $SeriesOrEvent; $NumTicketsRemaining; $FanID;
+		$SalePrice; $IDType; $SeriesOrEvent; $NumTicketsRemaining; $FanID; $promoterIDQuery;
 		// Fetch Event Information
 		switch( $_GET['type'] )
 		{
@@ -23,6 +42,7 @@
 					$row = mysqli_fetch_array($eventPrice);
 					$SalePrice = $row['TicketPrice'];
 					$NumTicketsRemaining = $row['NumTicketsRemaining'];
+					$promoterIDQuery = "(SELECT PromoterID FROM Event WHERE EventID=" . $_GET['ID'] . ")";
 					echo "TicketPrice: {$SalePrice}; Remaining: {$NumTicketsRemaining}</br>";
 					
 					// Clear Result
@@ -38,6 +58,7 @@
 					$row = mysqli_fetch_array($seriesPrice);
 					$SalePrice = $row['TicketPrice'];
 					$NumTicketsRemaining = $row['NumTicketsRemaining'];
+					$promoterIDQuery = "(SELECT PromoterID FROM Series WHERE SeriesID=" . $_GET['ID'] . ")";
 					
 					// Clear Result
 					mysqli_free_result($seriesPrice);
@@ -46,8 +67,10 @@
 				$SeriesOrEvent = TRUE;
 				break;
 			case 'resale':
-				if( ($resaleRes = mysqli_query( $connection, "SELECT * FROM Ticket WHERE TicketNumber={$_GET['ID']}")) or die("Could Not Find Ticket</br></br>".mysqli_error($connection)))
+				if( ($resaleRes = mysqli_query( $connection, "SELECT * FROM Ticket WHERE SeriesOrEvent = ".($_GET['isseries'] == "true" ? "TRUE" : "FALSE")." AND (SeriesID = {$_GET['ID']} OR EventID = {$_GET['ID']}) AND SellerID IS NOT NULL AND CurrentPrice = {$_GET['price']}")) or die("Could Not Find Ticket</br></br>".mysqli_error($connection)))
 				{
+					/* Test Table for all values.
+						outputResultTable($resaleRes); exit;//*/
 					if( mysqli_num_rows($resaleRes) > 0 )
 					{
 						$ticketRow = mysqli_fetch_array($resaleRes);
@@ -94,7 +117,7 @@
 			
 			// Generate Sold_by entry
 			$soldQuery = "INSERT INTO Sold_By (SaleID, PromoterID, FanOrPromoterSale) VALUE 
-				(" . $saleID . ", (SELECT PromoterID FROM Event WHERE EventID=" . $_GET['ID'] . "), TRUE);";
+				(" . $saleID . ", {$promoterIDQuery}, TRUE);";
 			if( !mysqli_query($connection, $soldQuery) )
 			{
 				echo "<b>ERROR:</b> Failed Sold By Query: " . mysqli_error($connection) . "; Query: '" . $soldQuery . "'</br>";
@@ -106,9 +129,9 @@
 				$NumTicketsRemaining -= $_POST['numTickets'];
 				
 				// Update Tickets Remaining
-				$updateQuery = "UPDATE Event 
+				$updateQuery = "UPDATE ".($_GET['type'] == "event" ? "Event" : "Series")." 
 									SET NumTicketsRemaining={$NumTicketsRemaining}
-									WHERE EventID={$_GET['ID']}";
+									WHERE ".($_GET['type'] == "event" ? "EventID={$_GET['ID']}" : "SeriesID={$_GET['ID']}");
 				if( !mysqli_query($connection, $updateQuery) )
 				{
 					echo "<b>ERROR:</b> Failed Update Query: " . mysqli_error($connection) . "; Query: '" . $updateQuery . "'</br>";
@@ -121,7 +144,7 @@
 			// Update Ticket Information
 			$updateQuery = "UPDATE Ticket
 								SET SellerID=NULL, SaleID={$saleID}, PriceSold={$SalePrice}, CurrentPrice=NULL
-								WHERE TicketNumber={$_GET['ID']}";
+								WHERE SeriesOrEvent = ".($_GET['isseries'] == "true" ? "TRUE" : "FALSE")." AND (SeriesID = {$_GET['ID']} OR EventID = {$_GET['ID']}) AND CurrentPrice = {$_GET['price']} AND SellerID = {$FanID} LIMIT {$_POST['numTickets']}";
 								
 			if( !mysqli_query($connection, $updateQuery) )
 			{
