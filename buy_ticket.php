@@ -327,7 +327,7 @@
 					//echo "ID: isset?".(isset($_GET['ID']) ? "TRUE" : "FALSE")."/Value: {$_GET['ID']} :: TYPE: isset?".(isset($_GET['type']) ? "TRUE" : "FALSE")."/Value: {$_GET['type']}</br>";
 					echo "<form action='process_order.php?ID={$_GET['ID']}&type={$_GET['type']}' method='post'><tr><td><b>Payment Option:</b></td>";
 					
-					$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM credit_card WHERE CCID IN (SELECT CCID FROM payment_info WHERE FanID=" . $_SESSION['userID'] . ")";
+					$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM Credit_Card WHERE CCID IN (SELECT CCID FROM Payment_Info WHERE FanID=" . $_SESSION['userID'] . ")";
 					if( ($payResult = mysqli_query($conn, $payQuery)) or die($payQuery."</br></br>".mysqli_error($conn)))
 					{
 						if( mysqli_num_rows($payResult) == 0)

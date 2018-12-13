@@ -15,7 +15,6 @@
 
 <body>
 <?php $_SESSION["userType"] = "fan" ?>
-<?php $_SESSION["userID"] = 1 ?>
   <div id="main">
     <div id="header">
       <div id="logo">
@@ -76,6 +75,20 @@
 			<div class="buttons">
 				<input type="hidden" name="form_id" value="39438" />
 				<input id="submit" class="button_text" type="submit" name="Add" value="Add" />
+			</div>
+			</ul>
+			</form>
+
+      <!-- Edit Account -->
+      <form id="form_39437" class="appnitro"  method="post" action="edit_account.php" method="post">
+			<div class="form_description">
+				<h2>Account Info</h2>
+		    </div>						
+			<ul >	
+			
+			<div class="buttons">
+				<input type="hidden" name="form_id" value="39439" />
+				<input id="submit" class="button_text" type="submit" name="View" value="Edit" />
 			</div>
 			</ul>
 			</form>

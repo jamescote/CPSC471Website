@@ -21,7 +21,7 @@
 				{
 					// Row 1: Name and Date
 					echo "<tr>";
-					echo "<td><b>Name: " . $row['FName'] . "</b></td>";
+					echo "<td>Name: " . $row['FName'] . "</b></td>";
 					echo "<td>Birth Date: " . $row['FBirthDate'] . "</td>";
 					echo "</tr>";
 					// Row 2: Description
