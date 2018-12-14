@@ -16,7 +16,6 @@
 </head>
 
 <body>
-<?php $_SESSION["userType"] = "fan" ?>
 
   <div id="main">
     <div id="header">

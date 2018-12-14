@@ -43,7 +43,7 @@
 					echo "<td>";
 					outputCurrencyString($row['TicketPrice']);
 					echo "</td>";
-					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row[EventID] . "&type=event";?>">Buy Tickets!</a></td>
+					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">Buy Tickets!</a></td>
 					<?php
 				}
 				echo "</table>";
