@@ -26,27 +26,25 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Fan Registration Page</h2>
+          <h2>Registration Page</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
     </div>
-    <div id="content_header"></div>
     <div id="site_content">
-      <div id="content2">
+      <div id="contents">
         <!-- insert the page content here -->
         <h1>Account Registration</h1>
-        <p>Please select the type of account you wish to create</p>
+        <p>What type of account do you wish to create</p>
         
         <form action="fanRegistration.php" method="post">
           <div class="form_settings">
-            
             <p style="padding-top: 0px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Fan" /></p>
-            <div class="form_settings">
+          </div>
         </form>
+
         <form action="promoterRegistration.php" method="post">
-            
-            
+            <div class="form_settings">
             <p style="padding-top: 0px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Promoter" /></p>
           </div>
         </form>
@@ -54,7 +52,7 @@
     </div>
     <div id="content_footer"></div>
     <div id="footer">
-      Copyright &copy; Yummy Maple Syrup</a>
+      Copyright &copy; Yummy Maple Syrup
     </div>
   </div>
 </body>
