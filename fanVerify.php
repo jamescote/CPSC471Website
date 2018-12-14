@@ -23,16 +23,16 @@
   VALUES ('$user_name' , '" . $_POST["password"] . "', '" . $_POST["fname"] . "', '" . $_POST["bdate"] . "')";
   
   // Get the newly generated SaleID
-  $promoID = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
-
+  //$promoID = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
+  //echo($promoID);
   //$result = mysqli_query($connection, $query);
 
   if(mysqli_query($con, $query))
   {
     echo "<p>Account Successfully created!</p>";
     session_regenerate_id(true);
-		$_SESSION['userType'] = "Fan";
-		$_SESSION['userID'] = $promoID;
+		$_SESSION['userType'] = "fan";
+		$_SESSION['userID'] = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
     // Redirect to this page if successfully inserted data
     header('Location: index.php');
 
