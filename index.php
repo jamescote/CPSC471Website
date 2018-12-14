@@ -1,6 +1,10 @@
 <?php
 	// Start Session
-	session_start();
+  session_start();
+  If(!isset($_SESSION['userType'])||!isset($_SESSION['userID'])){
+    $_SESSION['userType'] = 'guest';
+		$_SESSION['userID'] = NULL;
+  }
 	
 	if( isset($_GET['logout']) && $_GET['logout'] == 'true' )
 	{

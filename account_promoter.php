@@ -61,6 +61,18 @@
 			</div>
 			</ul>
 			</form>
+      <form id="form_39439" class="appnitro"  method="post" action="edit_promoter.php" method="post">
+			<div class="form_description">
+				<h2>Edit Account</h2>
+		    </div>						
+			<ul >	
+			
+			<div class="buttons">
+				<input type="hidden" name="form_id" value="39439" />
+				<input id="submit" class="button_text" type="submit" name="Edit" value="Edit" />
+			</div>
+			</ul>
+			</form>
       </div>
     </div>
     <div id="content_footer"></div>
