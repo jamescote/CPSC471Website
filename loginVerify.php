@@ -34,7 +34,6 @@
 
 		}
 	}
-	echo $accountType;
 	if($user_password == $password && strcasecmp($user_name, $userName) == 0){
 		echo "Login Successful!";
 		session_regenerate_id(true);
