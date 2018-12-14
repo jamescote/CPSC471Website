@@ -25,12 +25,35 @@
 
   //$result = mysqli_query($connection, $query);
 
+
   if(mysqli_query($con, $query))
   {
     echo "<p>Account Successfully created!</p>";
     session_regenerate_id(true);
 		$_SESSION['userType'] = "promoter";
 		$_SESSION['userID'] = mysqli_fetch_array(mysqli_query($con, "SELECT LAST_INSERT_ID()"))[0];
+    // Redirect to this page if successfully inserted data
+
+  }
+  else
+  {
+    echo "ERROR: Could not execute $query." . mysqli_error($con);
+  
+  }
+
+if($promoType == "Artist"){
+  $query = "INSERT INTO Music (PromoterID, Artist, Genre) VALUES ('{$_SESSION['userID']}', 'undefined', 'undefined')";
+
+
+}elseif($promoType == "Sports"){
+  $query = "INSERT INTO Sports (PromoterID, League) VALUES ('{$_SESSION['userID']}', 'undefined')";
+
+
+}else{
+  header('Location: index.php');
+}
+if(mysqli_query($con, $query))
+  {
     // Redirect to this page if successfully inserted data
     header('Location: index.php');
 
@@ -40,6 +63,7 @@
     echo "ERROR: Could not execute $query." . mysqli_error($con);
     //echo '<meta http-equiv="Refresh" content="2; url=promoterRegistration.php">';
   }
+  
 	
 
 ?>
