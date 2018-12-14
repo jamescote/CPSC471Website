@@ -47,6 +47,18 @@
               <span>Edit Description</span>
               <textarea name="description" rows="5" cols ="40"></textarea>
             </p>
+            <p>
+                <span>Edit Artist: (Artist Promoters)</span>
+                <input class= "contact" type="text" name="Artist" id="Artist">
+              </p>
+              <p>
+                <span>Edit Genre: (Artist Promoters)</span>
+                <input class= "contact" type="text" name="Artist" id="Artist">
+              </p>
+              <p>
+                <span>Edit League: (Sports Promoters)</span>
+                <input class= "contact" type="text" name="Artist" id="Artist">
+              </p>
             <span>Change Promoter Type</span>
                 <select name="PromoterType">
                     <option value="placeHolder">...</option>
@@ -54,6 +66,9 @@
                     <option value="Sports">Sports</option>
                     <option value="Other">Other</option>
                 </select>
+              
+            
+                
             
             <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Save" /></p>
           </div>
