@@ -11,7 +11,7 @@
 		// Fetch All Fan's Credit Cards
 		$query = "SELECT C.CCID, C.CCType, C.CCName, C.CCNumber, C.CCMonth, C.CCYear
 		FROM cpsc471.Credit_Card as C, cpsc471.Fan as F, cpsc471.Payment_Info as P
-		WHERE C.CCID=P.CCID AND P.FanID=F.FanID ";
+		WHERE C.CCID=P.CCID AND P.FanID=F.FanID AND F.FanID = {$_SESSION["userID"]} ";
 		if( $res = mysqli_query($con,$query) )
 		{
 			if( mysqli_num_rows($res) > 0 )
