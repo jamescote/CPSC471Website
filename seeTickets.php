@@ -209,7 +209,7 @@
 						// Display a button if tickets available, otherwise, sold out.
 						if( $seriesRow['NumTicketsRemaining'] > 0)
 						{
-							echo "<form action='buy_Ticket.php?ID={$seriesRow['SeriesID']}&type=series' method='post'>
+							echo "<form action='buy_ticket.php?ID={$seriesRow['SeriesID']}&type=series' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
 						}
 						else
@@ -233,7 +233,7 @@
 								echo "</td><td>{$ticketRow['NumTix']}</td>";
 								
 								// Not able to be sold out, display buy button.
-								echo "<td><form action='buy_Ticket.php?ID={$seriesRow['SeriesID']}&type=resale&isseries=true&price={$ticketRow['CurrentPrice']}' method='post'>
+								echo "<td><form action='buy_ticket.php?ID={$seriesRow['SeriesID']}&type=resale&isseries=true&price={$ticketRow['CurrentPrice']}' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
 							}
 							
@@ -374,7 +374,7 @@
 						
 						if( $eventRow['NumTicketsRemaining'] > 0)
 						{
-							echo "<form action='buy_Ticket.php?ID={$eventRow['EventID']}&type=event' method='post'>
+							echo "<form action='buy_ticket.php?ID={$eventRow['EventID']}&type=event' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form>";
 						}
 						else
@@ -397,7 +397,7 @@
 								echo "</td><td>{$ticketRow['NumTix']}</td>";
 								
 								// Buy Button
-								echo "<td><form action='buy_Ticket.php?ID={$eventRow['EventID']}&type=resale&isseries=false&price={$ticketRow['CurrentPrice']}' method='post'>
+								echo "<td><form action='buy_ticket.php?ID={$eventRow['EventID']}&type=resale&isseries=false&price={$ticketRow['CurrentPrice']}' method='post'>
 										<input style='float:middle;height:25px' type='submit'value='Buy Ticket'></form></td></tr>";
 							}
 							
