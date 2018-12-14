@@ -16,8 +16,10 @@
 
 <?php elseif( $_SESSION["userType"] == "promoter"): ?>
   <li><a href="index.php">Home</a></li>
+   <!--
   <li><a href="manage_events.php">Manage Events/Series</a></li>
-  <!-- <li><a href="manage_account.php">Account</a></li> -->
+  <li><a href="manage_account.php">Account</a></li> 
+  -->
   <li><a href="account_promoter.php"> Account </a></li>
   <li><a href="index.php?logout=true">Sign Out</a></li>
 <!--
