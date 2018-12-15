@@ -22,7 +22,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Your Account</h2>
+          <h2>Your Account - <?php echo "{$_SESSION['userID']}"; ?></h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
