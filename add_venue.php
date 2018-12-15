@@ -23,7 +23,6 @@
 
 <body>
 <?php $_SESSION["userType"] = "promoter" ?>
-<?php $_SESSION["userID"] = 12 ?>
   <div id="main">
     <div id="header">
       <div id="logo">
