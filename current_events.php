@@ -11,7 +11,7 @@
 		// Fetch All Events
 		$query = "SELECT E.EventID, E.PromoterID, E.Name, E.EventTimestamp, E.Description, E.TicketPrice, E.NumTicketsRemaining
 		FROM Event as E, Promoter as P
-        WHERE E.PromoterID = P.PromoterID AND E.EventTimestamp > NOW()
+        WHERE E.PromoterID = P.PromoterID AND P.PromoterID = '{$_SESSION['userID']}' AND E.EventTimestamp > NOW()
 		ORDER BY E.EventTimestamp ASC";
 		if( $res = mysqli_query($con,$query) )
 		{
