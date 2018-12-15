@@ -21,7 +21,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Login Page</h2>
+          <h2>Promoter Registration Page</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
@@ -30,29 +30,37 @@
     <div id="site_content">
       <div id="content2">
         <!-- insert the page content here -->
-        <h1>Login</h1>
-        <p>Please enter you Login details below</p>
-        <form action="loginVerify.php" method="post">
+        <h1>Create Promoter Account</h1>
+        <p>Please enter your details below</p>
+        <form action="promoterVerify.php" method="post">
           <div class="form_settings">
+
             
             <p>
-              <span>Username</span>
+              <span>Full Name</span>
+              <input class= "contact" type="text" name="pname" id="pname">
+            </p>
+            <p>
+              <span>Email Address</span>
               <input class= "contact" type="text" name="user" id="username">
             </p>
             <p>
               <span>Password</span>
               <input class= "contact" type="password" name="password" id="password">
             </p>
-
             <p>
-              <span>Account Type</span>
-                <select name="accountType">
-                  <option value="fan">Fan</option>
-                  <option value="promoter">Promoter</option>
-                </select>
+              <span>Description</span>
+              <textarea name="description" rows="5" cols ="40"></textarea>
             </p>
+            <span>Promoter Type</span>
+                <select name="PromoterType">
+                  <option value="Artist">Artist</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Other">Other</option>
+                </select>
             
-            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign in" /></p>
+            
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign up" /></p>
           </div>
         </form>
       </div>

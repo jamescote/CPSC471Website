@@ -8,41 +8,32 @@
 	$user_password = mysqli_real_escape_string($con,$_POST['password']);
 	$accountType = $_REQUEST['accountType'];
 	
-	if ($accountType == "Fan"){
-		echo "im fan ";
+	if ($accountType == "fan"){
 		$sql = "SELECT `FanID`, `FLogin`, `FPassword`, `Fname`, `FBirthDate` FROM `Fan` WHERE FLogin = '$user_name'";
-	}elseif ($accountType == "Promoter"){
-		echo " im promo";
+	}elseif ($accountType == "promoter"){
 		$sql = "SELECT `PromoterID`, `Login`, `Password` FROM `Promoter` WHERE Login = '$user_name'";
 	}
-	echo $accountType;
+	
 	if(!($result = mysqli_query($con, $sql))){
-		echo "Error: Query:" . mysqli_error($con) . "<\br>";
 	}
 
-	echo mysqli_num_rows($result);
 
 	while($row = mysqli_fetch_array($result)){
-		if ($accountType == "Fan"){
-			echo "im here 1";
+		if ($accountType == "fan"){
+			
 			$userName = $row['FLogin'];
 			$password = $row['FPassword'];
 			//$user_type = $row['type'];
 			$userID = $row['FanID'];
 			//$userFname = $row['Fname'];
 			//$userBirthday = $row['FBirthDate'];
-		}elseif($accountType == "Promoter"){
-			echo " test";
+		}elseif($accountType == "promoter"){
 			$userName = $row['Login'];
 			$password = $row['Password'];
 			$userID = $row['PromoterID'];
-			echo " $userName, $password, $userID";
-		}else{
-			echo "im here";
+
 		}
-		
 	}
-	echo $accountType;
 	if($user_password == $password && strcasecmp($user_name, $userName) == 0){
 		echo "Login Successful!";
 		session_regenerate_id(true);
@@ -54,6 +45,6 @@
 	}else{
 		echo "Login Failed!";
 	}echo "<p>Redirecting to homepage </p>";
-	//echo '<meta http-equiv="Refresh" content="2; url=index.php">';
+	echo '<meta http-equiv="Refresh" content="2; url=index.php">';
 
 ?>

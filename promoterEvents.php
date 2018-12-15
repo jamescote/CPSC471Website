@@ -24,7 +24,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Available Credit Cards</h2>
+          <h2>Selected Promoter Events</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
@@ -38,7 +38,7 @@
       <div id="content">
 
         <!-- insert the page content here -->
-        <?php include 'current_credit_card.php'; ?>
+        <?php include 'loadPromoterEvents.php'; ?>
         
       </div>
     </div>

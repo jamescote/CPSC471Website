@@ -1,5 +1,13 @@
 <h3>Upcoming Events</h3>
 <?php
+	/********************
+	 * Written By: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Simple testing section initially
+	 *		used as a way to get familiar with
+	 *		php and mysql. Turned into a ticker-like
+	 *		sidebar menu that showed upcoming events.
+	 *****************************/
 	include_once 'db_functions.php';
 	
 	// Connect to Database
@@ -35,7 +43,7 @@
 					echo "<td>";
 					outputCurrencyString($row['TicketPrice']);
 					echo "</td>";
-					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row[EventID] . "&type=event";?>">Buy Tickets!</a></td>
+					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">Buy Tickets!</a></td>
 					<?php
 				}
 				echo "</table>";

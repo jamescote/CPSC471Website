@@ -1,4 +1,14 @@
 <?php
+	/*********************************************
+	 * Written by: James Coté
+	 * For: CPSC 471 - Databases
+	 * Description: Displays all tickets that the
+	 *		user currently owns and is currently selling.
+	 * 		For tickets the user is selling, they have
+	 *		the option to cancel the sale which will take
+	 *		them off the market. For tickets the user owns,
+	 *		they can resell them and put them on the market.
+	 *************************************************/
 	// Start Session
 	session_start();
 	
@@ -16,8 +26,6 @@
 </head>
 
 <body>
-<?php $_SESSION["userType"] = "fan" ?>
-<?php $_SESSION["userID"] = 1 ?>
   <div id="main">
     <div id="header">
       <div id="logo">
@@ -33,23 +41,124 @@
     <div id="site_content">
       <div class="sidebar">
         <!-- insert your sidebar items here -->
-        <?php /*include 'upcoming_events.php';*/ ?>
       </div>
       <div id="content">
         <!-- insert the page content here -->
 		<?php 
-			if( $_GET['result'] == 'success' )
-				echo "<h2>Tickets Acquired! Enjoy your event!</h2>";
+		if( isset($_GET['result']))
+		{
+			if( 'buySuccess' == $_GET['result'] )
+				echo "<h3 style='color:forestgreen'>Tickets Acquired! Enjoy your event!</h3>";
+			elseif ('saleSuccess' == $_GET['result'])
+				echo "<h3 style='color:forestgreen'>Ticket's on the Market! Let's hope it goes to a good home!</h3>";
+			elseif ('cancelSuccess' == $_GET['result'])
+				echo "<h3 style='color:forestgreen'>Your Ticket Sale was Cancelled with Success!</h3>";
+		}	
 		?>
         <h1>Tickets</h1>
         <?php
 			$con = dbConnect();
+			$sellTicketLink = "sellTicket.php?ID=";
 			
 			if( !mysqli_connect_errno($con) )
 			{
-				echo "<h2>Event Tickets:</h2>"; // Display Event Tickets
-				$eventQuery = "SELECT 
-									T.TicketNumber, 
+				// Display Tickets for Sale:
+				echo "<h2>Tickets For Sale, By You:</h2>";
+				$ticketSaleQuery = "( SELECT 
+									T.EventID, 
+									T.PriceSold,
+									T.CurrentPrice,
+									T.SeriesOrEvent, 
+									E.Name, 
+									E.EventTimestamp AS Date, 
+									E.Description, 
+									E.Duration,
+									V.VenueName,
+									COUNT(T.EventID) AS NumTix
+						FROM Ticket AS T 
+						JOIN Event AS E 
+							ON NOT T.SeriesOrEvent AND T.EventID = E.EventID
+						JOIN Event_Venues AS V
+							ON V.EventID = E.EventID
+						WHERE T.SellerID = {$_SESSION['userID']}
+						GROUP BY T.EventID, T.PriceSold)
+						UNION
+						(SELECT 
+									T.SeriesID, 
+									T.PriceSold, 
+									T.CurrentPrice,
+									T.SeriesOrEvent, 
+									Se.Name, 
+									E1.EventTimestamp AS Date, 
+									Se.Description, 
+									Se.NumEvents,
+									E2.EventTimestamp AS EndDate,
+									COUNT(T.SeriesID) AS NumTix
+						FROM Ticket AS T 
+						JOIN Series AS Se 
+							ON T.SeriesOrEvent AND T.SeriesID = Se.SeriesID
+						JOIN Event AS E1
+							ON Se.StartEventID = E1.EventID
+						JOIN Event AS E2
+							ON Se.EndEventID = E2.EventID
+						WHERE T.SellerID = {$_SESSION['userID']}
+						GROUP BY T.SeriesID, T.PriceSold)
+						ORDER BY Date";
+				
+				if( ($res = mysqli_query($con, $ticketSaleQuery)) or die($ticketSaleQuery."<br/><br/>".mysql_error()) )
+				{
+					if( mysqli_num_rows($res) > 0 )
+					{
+						/* Test Table for all values.
+						outputResultTable($res); exit;//*/
+						echo "<table style='width:825px'>";
+						while( $row = mysqli_fetch_array($res) )
+						{
+							echo "<tr><th><b>{$row['Name']}</b></th>
+									  <th style='text-align:center'><b>Type:</b> ".($row['SeriesOrEvent'] ? "SERIES" : "EVENT")."</th>
+									  <th style='width:165px;text-align:center'><b>Price Bought:</b> ";
+									  outputCurrencyString($row['PriceSold']);
+  									  echo "</th>";
+									  echo "<th style='width:165px;text-align:center'><b>Selling For:</b> ";
+									  outputCurrencyString($row['CurrentPrice']);
+									  echo "</th>";
+								echo "<th  style='width:165px;text-align:center'><form action='processSale.php?cancelSale={$row['EventID']}&type=".($row['SeriesOrEvent'] ? "series" : "event")."&price={$row['PriceSold']}' method='post'>
+										<input type='submit' value='Cancel Sale'></form></th></tr>";
+							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td></tr>";
+							echo "<tr>";
+							echo "<td style='width:165px'><b>Number of Tickets: </b>{$row['NumTix']}</td>";
+							switch($row['SeriesOrEvent'])
+							{
+								case TRUE: // Series
+									echo "<td style='width:165px'><b>From:</b> {$row['Date']}</td>";
+									echo "<td style='width:165px'><b>To:</b> {$row['VenueName']}</td>";
+									echo "<td colspan=2  style='width:330px'><b>Number of Events:</b> {$row['Duration']}</td>";
+									break;
+								case FALSE: // Event
+									echo "<td style='width:165px'><b>When:</b> {$row['Date']}</td>";
+									echo "<td style='width:165px'><b>Length:</b> {$row['Duration']}</td>";
+									echo "<td colspan=2 style='width:330px'><b>Where:</b> {$row['VenueName']}</td>";
+									break;
+							}
+							echo "</tr>";
+						}
+						echo "</table>";
+						
+						// Clear Result
+						mysqli_free_result($res);
+					}
+					else
+						echo "<p>You aren't selling any Tickets at this time!</p>";
+				}
+				else
+				{	
+					echo "<p>Query: " . $ticketSaleQuery . "</p>";
+					echo "<b>ERROR:</b> Failed Query: " . mysqli_error($connection) . " {" . ($res ? "TRUE" : "FALSE") . "}</br>";
+				}
+				
+				// Display Owned Tickets
+				echo "<h2>My Tickets:</h2>"; 
+				$eventQuery = "(SELECT 
 									T.EventID, 
 									T.PriceSold, 
 									T.SaleID, 
@@ -59,7 +168,8 @@
 									E.Description, 
 									E.Duration,
 									S.FanID,
-									V.VenueName
+									V.VenueName,
+									COUNT(T.EventID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Event AS E 
 							ON NOT T.SeriesOrEvent AND T.EventID = E.EventID
@@ -67,61 +177,21 @@
 							ON T.SaleID = S.SaleID
 						JOIN Event_Venues AS V
 							ON V.EventID = E.EventID
-						WHERE S.FanID = {$_SESSION['userID']}";
-				
-				
-				if( ($res = mysqli_query($con, $eventQuery)) or die($eventQuery."<br/><br/>".mysql_error()) )
-				{
-					if( mysqli_num_rows($res) > 0 )
-					{
-						/* Test Table for all values.
-						outputResultTable($res)//*/
-
-						while( $row = mysqli_fetch_array($res) )
-						{
-							echo "<table align='center'>";
-							echo "<tr><th colspan=3><b>{$row['Name']}</b></th>
-									  <th><b>Price:</b> ";
-									  outputCurrencyString($row['PriceSold']);
-							echo "</th>";
-							echo "<th><form action='sell_ticket?tix={$row['TicketNumber']}' method='get'>
-										<input type='submit' value='Resell Ticket'></form></th></tr>";
-							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td>";
-							echo "<tr>";
-							echo "<td><b>Number:</b> {$row['TicketNumber']}</td>";
-							echo "<td><b>When:</b> {$row['Date']}</td>";
-							echo "<td><b>Length:</b> {$row['Duration']}</td>";
-							echo "<td colspan=2><b>Where:</b> {$row['VenueName']}</td>";
-							echo "</tr>";
-							echo "</table>";
-						}
-						
-						// Clear Result
-						mysqli_free_result($res);
-					}
-					else
-						echo "<p>No Tickets at this time. Get browsing!</p>";
-				}
-				else
-				{	
-					echo "<p>Query: " . $ticketQuery . "</p>";
-					echo "<b>ERROR:</b> Failed Query: " . mysqli_error($connection) . " {" . ($res ? "TRUE" : "FALSE") . "}</br>";
-				}
-				
-				// Display Series Tickets
-				echo "<h2>Series Tickets:</h2>"; 
-				$seriesQuery = "SELECT 
-									T.TicketNumber, 
+						WHERE S.FanID = {$_SESSION['userID']} AND T.SellerID IS NULL
+						GROUP BY T.EventID, T.PriceSold)
+						UNION
+						(SELECT 
 									T.SeriesID, 
 									T.PriceSold, 
 									T.SaleID, 
 									T.SeriesOrEvent, 
 									Se.Name, 
-									E1.EventTimestamp AS StartDate, 
-									E2.EventTimestamp AS EndDate, 
+									E1.EventTimestamp AS Date, 
 									Se.Description, 
 									Se.NumEvents,
-									S.FanID
+									S.FanID,
+									E2.EventTimestamp AS EndDate,
+									COUNT(T.SeriesID) AS NumTix
 						FROM Ticket AS T 
 						JOIN Series AS Se 
 							ON T.SeriesOrEvent AND T.SeriesID = Se.SeriesID
@@ -131,34 +201,46 @@
 							ON Se.StartEventID = E1.EventID
 						JOIN Event AS E2
 							ON Se.EndEventID = E2.EventID
-						WHERE S.FanID = {$_SESSION['userID']}";
+						WHERE S.FanID = {$_SESSION['userID']} AND T.SellerID IS NULL
+						GROUP BY T.SeriesID, T.PriceSold)
+						ORDER BY Date";				
 				
-				
-				if( ($res = mysqli_query($con, $seriesQuery)) or die($seriesQuery."<br/><br/>".mysql_error()) )
+				if( ($res = mysqli_query($con, $eventQuery)) or die($eventQuery."<br/><br/>".mysql_error()) )
 				{
 					if( mysqli_num_rows($res) > 0 )
 					{
 						/* Test Table for all values.
-						outputResultTable($res)//*/
+						outputResultTable($res); exit;//*/
 						
+						echo "<table style='width:825px'>";
 						while( $row = mysqli_fetch_array($res) )
 						{
-							echo "<table align='center'>";
-							echo "<tr><th colspan=3><b>{$row['Name']}</b></th>
-									  <th><b>Price:</b> ";
+							echo "<tr><th colspan=2><b>{$row['Name']}</b></th>
+									  <th style='text-align:center'><b>Type:</b> ".($row['SeriesOrEvent'] ? "SERIES" : "EVENT")."</th>
+									  <th style='width:165px;text-align:center'><b>Price:</b> ";
 									  outputCurrencyString($row['PriceSold']);
 							echo "</th>";
-							echo "<th><form action='sell_ticket?tix={$row['TicketNumber']}' method='get'>
-										<input type='submit' value='Resell Ticket'></form></th></tr>";
-							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td>";
+							echo "<th  style='width:165px;text-align:center'><form action='{$sellTicketLink}{$row['EventID']}&type=".($row['SeriesOrEvent'] ? "series" : "event")."&price={$row['PriceSold']}' method='post'>
+										<input type='submit'value='Resell Ticket(s)'></form></th></tr>";
+							echo "<tr><td colspan=5><b>Description:</b></br>{$row['Description']}</td></tr>";
 							echo "<tr>";
-							echo "<td><b>Number:</b> {$row['TicketNumber']}</td>";
-							echo "<td><b>From:</b> {$row['StartDate']}</td>";
-							echo "<td><b>To:</b> {$row['EndDate']}</td>";
-							echo "<td colspan=2><b>Number of Events:</b> {$row['NumEvents']}</td>";
-							echo "</tr>";
-							echo "</table>";
+							echo "<td style='width:165px'><b>Number of Tickets: </b>{$row['NumTix']}</td>";
+							switch($row['SeriesOrEvent'])
+							{
+								case TRUE: // Series
+									echo "<td style='width:165px'><b>From:</b> {$row['Date']}</td>";
+									echo "<td style='width:165px'><b>To:</b> {$row['VenueName']}</td>";
+									echo "<td colspan=2 style='width:330px'><b>Number of Events:</b> {$row['Duration']}</td>";
+									break;
+								case FALSE: // Event
+									echo "<td style='width:165px'><b>When:</b> {$row['Date']}</td>";
+									echo "<td style='width:165px'><b>Length:</b> {$row['Duration']}</td>";
+									echo "<td colspan=2 style='width:330px'><b>Where:</b> {$row['VenueName']}</td>";
+									break;
+							}
+							echo "</tr>";						
 						}
+						echo "</table>";
 						
 						// Clear Result
 						mysqli_free_result($res);
@@ -168,7 +250,7 @@
 				}
 				else
 				{	
-					echo "<p>Query: " . $ticketQuery . "</p>";
+					echo "<p>Query: " . $eventQuery . "</p>";
 					echo "<b>ERROR:</b> Failed Query: " . mysqli_error($connection) . " {" . ($res ? "TRUE" : "FALSE") . "}</br>";
 				}
 			}

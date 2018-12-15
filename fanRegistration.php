@@ -21,7 +21,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-          <h2>Login Page</h2>
+          <h2>Fan Registration Page</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
@@ -30,29 +30,30 @@
     <div id="site_content">
       <div id="content2">
         <!-- insert the page content here -->
-        <h1>Login</h1>
-        <p>Please enter you Login details below</p>
-        <form action="loginVerify.php" method="post">
+        <h1>Fan Registration</h1>
+        <p>Please enter you details below</p>
+        <form action="fanVerify.php" method="post">
           <div class="form_settings">
-            
+
             <p>
-              <span>Username</span>
+              <span>Email Address</span>
               <input class= "contact" type="text" name="user" id="username">
+            </p>
+            <p>
+              <span>Full Name</span>
+              <input class= "contact" type="text" name="fname" id="fname">
             </p>
             <p>
               <span>Password</span>
               <input class= "contact" type="password" name="password" id="password">
             </p>
-
             <p>
-              <span>Account Type</span>
-                <select name="accountType">
-                  <option value="fan">Fan</option>
-                  <option value="promoter">Promoter</option>
-                </select>
+              <span>Birth Date</span>
+              <input class= "contact" type="date" name="bdate" id="bdate">
             </p>
             
-            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign in" /></p>
+            
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign up" /></p>
           </div>
         </form>
       </div>

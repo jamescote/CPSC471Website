@@ -1,6 +1,16 @@
 <?php
 	// Start Session
-	session_start();
+  session_start();
+  If(!isset($_SESSION['userType'])||!isset($_SESSION['userID'])){
+    $_SESSION['userType'] = 'guest';
+		$_SESSION['userID'] = NULL;
+  }
+	
+	if( isset($_GET['logout']) && $_GET['logout'] == 'true' )
+	{
+		$_SESSION['userType'] = 'guest';
+		$_SESSION['userID'] = NULL;
+	}
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,8 +24,6 @@
 </head>
 
 <body>
-<?php $_SESSION["userType"] = "fan" ?>
-<?php $_SESSION["userID"] = 1 ?>
   <div id="main">
     <div id="header">
       <div id="logo">
@@ -23,10 +31,7 @@
           <!-- class="logo_colour", allows you to change the colour of the text -->
           <h1><a href="index.php">Master<span class="logo_colour">Ticket</span></a></h1>
 		  <!-- Make sure you put the proper page name here -->
-		  <h2>Welcome<?php if ($_SESSION["userName"] != null){
-					echo( " " . $_SESSION["userName"] );
-				} 
-		  ?>!</h2>
+		  <h2>Welcome!</h2>
         </div>
       </div>
       <?php include 'menu.php'; ?>
