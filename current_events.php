@@ -37,7 +37,7 @@
 					// Delete button
 					echo "<tr>";
 					?> 
-					<td class="event-delete">
+					colspan=2 class="event-delete">
 						<form action="delete_event.php" method="post">
 							<input type="hidden" name="name" value="<?php echo $row['EventID']; ?>">
 							<input type="submit" name="submit" value="Delete">
