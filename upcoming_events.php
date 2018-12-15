@@ -40,11 +40,14 @@
 					echo "</tr>";
 					// Row 3: Ticket Price and link to buy
 					echo "<tr>";
-					echo "<td>";
+					echo "<td ".($_SESSION['userType'] == "promoter" ? "colspan=2" : "").">";
 					outputCurrencyString($row['TicketPrice']);
 					echo "</td>";
-					?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">Buy Tickets!</a></td>
-					<?php
+					if( "fan" == $_SESSION['userType'] )
+					{
+						?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">Buy Tickets!</a></td>
+						<?php
+					}
 				}
 				echo "</table>";
 				mysqli_free_result($res);

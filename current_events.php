@@ -11,13 +11,13 @@
 		// Fetch All Events
 		$query = "SELECT E.EventID, E.PromoterID, E.Name, E.EventTimestamp, E.Description, E.TicketPrice, E.NumTicketsRemaining
 		FROM Event as E, Promoter as P
-        WHERE E.PromoterID = P.PromoterID AND P.PromoterID = '{$_SESSION["userID"]}' AND E.EventTimestamp > NOW()
+        WHERE E.PromoterID = P.PromoterID AND E.PromoterID = {$_SESSION["userID"]} AND E.EventTimestamp > NOW()
 		ORDER BY E.EventTimestamp ASC";
 		if( $res = mysqli_query($con,$query) )
 		{
 			if( mysqli_num_rows($res) > 0 )
 			{
-				echo '<table>';
+				echo '<table width="100%">';
 				while( $row = mysqli_fetch_array($res))
 				{
 					// Row 1: Name and Type
@@ -37,7 +37,7 @@
 					// Delete button
 					echo "<tr>";
 					?> 
-					colspan=2 class="event-delete">
+					<td colspan=2 class="event-delete">
 						<form action="delete_event.php" method="post">
 							<input type="hidden" name="name" value="<?php echo $row['EventID']; ?>">
 							<input type="submit" name="submit" value="Delete">
