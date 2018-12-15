@@ -33,6 +33,9 @@
     <div id="site_content">
       <div class="sidebar">
         <!-- insert your sidebar items here -->
+        <?php include 'loadFollowing.php'; ?>
+      </div>
+      <div id="content">
 				
       </div>
       <div id="content">
