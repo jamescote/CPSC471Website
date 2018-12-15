@@ -366,8 +366,9 @@
 								<?php
 									while( $payRow = mysqli_fetch_array($payResult))
 									{
-										$expDate = date_create_from_format('d-m-y', '31-' . $payRow['CCMonth'] . '-' . $payRow['CCYear']);
-										if( date_format($expDate, "Y-m-d") >= date("Y-m-d") )
+										//couldnt get this to work properly
+										//$expDate = date_create_from_format('d-m-y', '31-' . $payRow['CCMonth'] . '-' . $payRow['CCYear']);
+										//if( date_format($expDate, "Y-m-d") >= date("Y-m-d") )
 											echo "<option value='" . $payRow['CCID'] . "'>" . $payRow['CCNumber'] . " (exp: " . $payRow['CCMonth'] . "/" . $payRow['CCYear'] . " - " . $payRow['CCType'] . ")</option>";
 									}
 								?>
