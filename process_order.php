@@ -37,7 +37,7 @@
 		switch( $_GET['type'] )
 		{
 			case 'event':
-				if( $eventPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM event WHERE EventID = " . $_GET['ID'] ) )
+				if( $eventPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM Event WHERE EventID = " . $_GET['ID'] ) )
 				{
 					$row = mysqli_fetch_array($eventPrice);
 					$SalePrice = $row['TicketPrice'];
@@ -53,7 +53,7 @@
 				echo "Series or Event: " . $SeriesOrEvent . "</br>";
 				break;
 			case 'series':
-				if( $seriesPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM series WHERE SeriesID = " . $_GET['ID'] ) )
+				if( $seriesPrice = mysqli_query( $connection, "SELECT TicketPrice, NumTicketsRemaining FROM Series WHERE SeriesID = " . $_GET['ID'] ) )
 				{
 					$row = mysqli_fetch_array($seriesPrice);
 					$SalePrice = $row['TicketPrice'];
@@ -91,7 +91,7 @@
 		}
 		// Generate Sale
 		$saleDate = date('Y-m-d');
-		$saleQuery = "INSERT INTO sale (FanID, DollarAmount, SaleDate) VALUE ({$_SESSION['userID']}, {$SalePrice}, DATE '{$saleDate}');";
+		$saleQuery = "INSERT INTO Sale (FanID, DollarAmount, SaleDate) VALUE ({$_SESSION['userID']}, {$SalePrice}, DATE '{$saleDate}');";
 		if( !mysqli_query($connection, $saleQuery) )
 		{
 			echo "<b>ERROR:</b> Failed Sale Query: " . mysqli_error($connection) . "; Query: '{$saleQuery}'</br>";
