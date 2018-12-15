@@ -1,10 +1,12 @@
 # CPSC471Website
-Github for Final Database Project
+Master Ticket  
+Final Database Project
 
 Note: change server, username, and password in dbConnect() function in db_functions.php to your own username and password  
+
 ```
 function dbConnect() {  
-	// Change "root" and "123456789" to your own database username and password
+	// Change "localhost", "root", and "123456789" to own database specifications
 	$con = mysqli_connect("localhost","root","123456789","cpsc471");
 		
 	// Handle Connection Errors:
