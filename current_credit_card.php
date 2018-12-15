@@ -38,6 +38,7 @@
 						</form>
 					</td>
 					<?php
+					echo '<td colspan="2">', "Expiry " .$row['CCMonth']  . "/" . $row['CCYear']  . '</td>';
 					echo '</tr>';
                     // Divider
                     echo '<tr>';
