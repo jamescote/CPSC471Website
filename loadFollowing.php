@@ -10,31 +10,34 @@
 	if( !mysqli_connect_errno($con) )
 	{
 		// Fetch Next 3 Closest Events
-		$query = "SELECT * FROM Followed_By WHERE FanID = $fanId";
+		$query = "SELECT P.PromoterID, P.Name, P.PromoterType, P.Description FROM cpsc471.Followed_By as F, cpsc471.Promoter as P WHERE F.FanID = $fanId AND F.PromoterID = P.PromoterID ";
 		if( $res = mysqli_query($con,$query) )
 		{
 			if( mysqli_num_rows($res) > 0 )
 			{
 				echo "<table>";
-                while( $row = mysqli_fetch_array($res)){
-                $q2 = "SELECT * FROM Promoter WHERE PromoterID = {$row['PromoterID']}";
-                    $result = $res = mysqli_query($con,$q2);
-                    while(   $row2 = mysqli_fetch_array($result))
-				    {
+                while( $row = mysqli_fetch_array($res))
+				{
                         // Row 1: Name and Date
                         echo "<tr>";
-                        echo "<td><b>" . $row2['Name'] . "</b></td>";
-                        echo "<td>" . $row2['PromoterType'] . "</td>";
+                        echo "<td><b>" . $row['Name'] . "</b></td>";
+                        echo "<td>" . $row['PromoterType'] . "</td>";
                         echo "</tr>";
                         // Row 2: Description
                         echo "<tr>";
-                        echo "<td colspan='2'>" . $row2['Description'] . "</td>";
+                        echo "<td colspan='2'>" . $row['Description'] . "</td>";
                         echo "</tr>";
                         // Row 3: Ticket Price and link to buy
-                        echo "</td>";
-                        ?> <td colspan=2><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">See Events</a></td>
+						echo "</td>";
+                        ?> 
+						<td class="seeEvents">
+						<form action="promoterEvents.php" method="post">
+							<input type="hidden" name="pID" value="<?php echo $row['PromoterID']; ?>">
+							<input type="submit" name="seeEvents" value="See Events">
+						</form>
+					</td>
                         <?php
-                    }
+                
                 }
 				echo "</table>";
 				mysqli_free_result($res);
@@ -46,7 +49,7 @@
 		}
 		else // Error in SQL Statment
 		{
-			echo "ERROR: could not execute $sql. " . mysqli_error($con);
+			echo "ERROR: could not execute $query. " . mysqli_error($con);
 		}
 	}
 ?>
