@@ -1,6 +1,8 @@
-<h3>Current Created Events</h3>
+<h3>Upcoming Promoter Events</h3>
 <?php
 	include_once 'db_functions.php';
+
+	$pID = $_POST["pID"];
 	
 	// Connect to Database
 	$con = dbConnect();
@@ -11,7 +13,7 @@
 		// Fetch All Events
 		$query = "SELECT E.EventID, E.PromoterID, E.Name, E.EventTimestamp, E.Description, E.TicketPrice, E.NumTicketsRemaining
 		FROM Event as E, Promoter as P
-        WHERE E.PromoterID = P.PromoterID AND E.EventTimestamp > NOW()
+        WHERE E.PromoterID = P.PromoterID AND P.PromoterID= $pID AND E.EventTimestamp > NOW()
 		ORDER BY E.EventTimestamp ASC";
 		if( $res = mysqli_query($con,$query) )
 		{
@@ -36,19 +38,6 @@
 					echo '</tr>';
 					// Delete button
 					echo "<tr>";
-					?> 
-					<td class="event-delete">
-						<form action="delete_event.php" method="post">
-							<input type="hidden" name="name" value="<?php echo $row['EventID']; ?>">
-							<input type="submit" name="submit" value="Delete">
-						</form>
-					</td>
-					<?php
-					echo '</tr>';
-                    // Divider
-                    echo '<tr>';
-					echo '<td colspan="2">' . ' ' . '</td>';
-                    echo '</tr>';
 					?> 
 					<?php
 				}
