@@ -14,7 +14,7 @@
 	// Connect to Database
 	function dbConnect()
 	{
-		$con = mysqli_connect("localhost","root","password","cpsc471");
+		$con = mysqli_connect("localhost","root","123456789","cpsc471");
 		
 		// Handle Connection Errors:
 		if( mysqli_connect_errno($con) )

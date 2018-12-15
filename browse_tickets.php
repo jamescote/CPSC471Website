@@ -269,7 +269,7 @@
 						$resultStartDate = date_create_from_format("Y-m-d H:i:s", $row['StartDate']);
 						$resultEndDate = date_create_from_format("Y-m-d H:i:s", $row['VenueName']);
 						$isSeries = ('object' == gettype($resultEndDate) ? true : false);
-						$resaleQuery = "SELECT * FROM Ticket WHERE (SellerID IS NOT NULL) AND ((SeriesOrEvent = TRUE AND SeriesID = {$row['ID']}) OR (SeriesOrEvent = FALSE AND EventID = {$row['ID']}))";
+						$resaleQuery = "SELECT * FROM Ticket WHERE (SellerID IS NOT NULL AND SellerID != {$_SESSION['userID']}) AND ((SeriesOrEvent = TRUE AND SeriesID = {$row['ID']}) OR (SeriesOrEvent = FALSE AND EventID = {$row['ID']}))";
 						$ticketsRemaining = $row['NumTicketsRemaining'];
 						if( ($resaleResult = mysqli_query($conn, $resaleQuery)) or die($resaleQuery."</br></br>".mysqli_error($conn)))
 						{

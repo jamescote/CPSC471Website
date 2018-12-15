@@ -347,12 +347,15 @@
 					//echo "ID: isset?".(isset($_GET['ID']) ? "TRUE" : "FALSE")."/Value: {$_GET['ID']} :: TYPE: isset?".(isset($_GET['type']) ? "TRUE" : "FALSE")."/Value: {$_GET['type']}</br>";
 					echo "<form action='process_order.php?ID={$_GET['ID']}&type={$_GET['type']}".($isResale ? "&isseries={$_GET['isseries']}" : "")."&price={$price}' method='post'><tr><td><b>Payment Option:</b></td>";
 					
+					$ableToPurchase = true;
+					
 					$payQuery = "SELECT CCID, CCNumber, CCType, CCMonth, CCYear FROM Credit_Card WHERE CCID IN (SELECT CCID FROM Payment_Info WHERE FanID=" . $_SESSION['userID'] . ")";
 					if( ($payResult = mysqli_query($conn, $payQuery)) or die($payQuery."</br></br>".mysqli_error($conn)))
 					{
 						if( mysqli_num_rows($payResult) == 0)
 						{
 							echo "<td>Oops! You have no Payment Options set up yet! :(</td></tr>";
+							$ableToPurchase = false;
 						}
 						else
 						{
@@ -399,7 +402,7 @@
 					// Ticket buy button
 					echo "<tr><td colspan=2>";
 					?>
-					<INPUT TYPE="SUBMIT" VALUE="Get Tickets!">
+					<INPUT TYPE="SUBMIT" <?php echo ($ableToPurchase ? "" : "disabled"); ?> VALUE="Get Tickets!">
 					<?php
 					echo "</td></tr></form>";
 				}

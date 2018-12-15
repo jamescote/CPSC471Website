@@ -53,13 +53,12 @@
               <textarea name="description" rows="5" cols ="40"></textarea>
             </p>
             <span>Promoter Type</span>
-                <select name="PromoterType">
+                <select id="PromoterType" name="PromoterType">
                   <option value="Artist">Artist</option>
                   <option value="Sports">Sports</option>
                   <option value="Other">Other</option>
                 </select>
-            
-            
+
             <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="contact_submitted" value="Sign up" /></p>
           </div>
         </form>

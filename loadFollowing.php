@@ -32,7 +32,7 @@
                         echo "</tr>";
                         // Row 3: Ticket Price and link to buy
                         echo "</td>";
-                        ?> <td><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">See Events</a></td>
+                        ?> <td colspan=2><a href ="<?php echo "buy_ticket.php?ID=" . $row['EventID'] . "&type=event";?>">See Events</a></td>
                         <?php
                     }
                 }

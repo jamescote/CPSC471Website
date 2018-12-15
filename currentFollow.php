@@ -14,7 +14,7 @@
 		{
 			if( mysqli_num_rows($res) > 0 )
 			{
-				echo '<table>';
+				echo "<table width='100%'>";
 				while( $row = mysqli_fetch_array($res))
 				{
 					// Row 1: Name and Type
@@ -29,7 +29,7 @@
                     // Delete button
 					echo "<tr>";
 					?> 
-					<td class="follow">
+					<td colspan=2 class="follow">
 						<form action="follow.php" method="post">
 							<input type="hidden" name="name" value="<?php echo $row['PromoterID']; ?>">
 							<input type="submit" name="submit" value="Follow">
@@ -38,7 +38,7 @@
 			
 					<?php
 				}
-				echo '</table>';
+				echo '</tr></table>';
 				mysqli_free_result($res);
 			}
 			else // No results? 

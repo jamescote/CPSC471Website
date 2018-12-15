@@ -7,16 +7,18 @@
     $user_name = mysqli_real_escape_string($con,$_POST['user']);
     
 	
-    $sql = "SELECT * FROM `Fan` WHERE Login = '$user_name'";
+    $sql = "SELECT * FROM `Fan` WHERE FLogin = '$user_name'";
     
         
-	$result = mysqli_query($con, $sql);
+	$result = mysqli_query($con, $sql) or die($sql."</br></br>".mysqli_error($con));
 
 	if ((mysqli_num_rows($result))>=1){
 
     
         echo "<script type='text/javascript'>alert('user name already resgistered');</script>";
-        echo '<meta http-equiv="Refresh" content="2; url=fanRegistration.php">';
+		//header("location:".$_SERVER['HTTP_REFERER']);
+        echo "<meta http-equiv='Refresh' content='2; url={$_SERVER['HTTP_REFERER']}'>";
+		exit;
     }
 
     $query = "INSERT INTO Fan (FLogin, FPassword, FName, FBirthDate)
